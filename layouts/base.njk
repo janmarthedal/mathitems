@@ -10,6 +10,8 @@
     <body>
         <header>
             <h1>{{ title | safe }}</h1>
+            {%- block extraheader %}
+            {%- endblock %}
         </header>
         <main>
             {{ contents | safe }}

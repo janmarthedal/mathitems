@@ -3,3 +3,36 @@
 {%- block extrahead %}
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
 {%- endblock %}
+
+{%- block extraheader %}
+            {% if item.defines %}
+            <div>
+                Defines:
+                <ul>
+                {% for c in item.defines %}
+                <li>{{ c }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            {% if item.itemRefs %}
+            <div>
+                Item references:
+                <ul>
+                {% for c in item.itemRefs %}
+                <li>{{ c }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            {% if item.conceptRefs %}
+            <div>
+                Concept references:
+                <ul>
+                {% for c in item.conceptRefs %}
+                <li>{{ c }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+{%- endblock %}
