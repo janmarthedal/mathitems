@@ -9,7 +9,7 @@ function prepare(files, metalsmith, done) {
         const { title } = data;
 
         if (title && ['D', 'T'].includes(title[0]) && !Number.isNaN(title.substring(1))) {
-            data.layout = 'default.hbs';
+            data.layout = 'base.njk';
             delete files[file];
             files[title + '/index' + extname(file)] = data;
         }
