@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node index",
     "serve": "http-server ./build"
   },
   "repository": {
@@ -19,10 +20,11 @@
   },
   "homepage": "https://github.com/janmarthedal/mathitems#readme",
   "devDependencies": {
+    "@iktakahiro/markdown-it-katex": "^4.0.1",
     "http-server": "^0.12.3",
     "jstransformer-nunjucks": "^1.0.0",
     "metalsmith": "^2.3.0",
     "metalsmith-layouts": "^2.3.1",
-    "metalsmith-markdown": "^1.3.0"
+    "metalsmith-markdownit": "^0.5.0"
   }
 }
