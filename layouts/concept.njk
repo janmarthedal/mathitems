@@ -1,0 +1,14 @@
+{% extends 'base.njk' %}
+
+{%- block contents %}
+            {% if items|length %}
+            <p>Items defining this concept:</p>
+            <ul>
+            {%- for i in items %}
+            <li><a href="{{ i.permalink }}">{{ i.item.name }}</a></li>
+            {%- endfor %}
+            </ul>
+            {% else %}
+            <p>No items define this concept</p>
+            {% endif %}
+{%- endblock %}

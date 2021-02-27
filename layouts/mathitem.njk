@@ -9,9 +9,9 @@
             <div>
                 Defines:
                 <ul>
-                {% for c in item.defines %}
-                <li>{{ c }}</li>
-                {% endfor %}
+                {%- for c in item.defines %}
+                <li><a href="{{ c.permalink }}">{{ c.title }}</a></li>
+                {%- endfor %}
                 </ul>
             </div>
             {% endif %}
@@ -19,9 +19,9 @@
             <div>
                 Item references:
                 <ul>
-                {% for c in item.itemRefs %}
+                {%- for c in item.itemRefs %}
                 <li><a href="{{ c.permalink }}">{{ c.item.name }}</a></li>
-                {% endfor %}
+                {%- endfor %}
                 </ul>
             </div>
             {% endif %}
@@ -29,9 +29,9 @@
             <div>
                 Concept references:
                 <ul>
-                {% for c in item.conceptRefs %}
-                <li>{{ c }}</li>
-                {% endfor %}
+                {%- for c in item.conceptRefs %}
+                <li><a href="{{ c.permalink }}">{{ c.title }}</a></li>
+                {%- endfor %}
                 </ul>
             </div>
             {% endif %}
