@@ -20,7 +20,7 @@
                 Item references:
                 <ul>
                 {% for c in item.itemRefs %}
-                <li>{{ c }}</li>
+                <li><a href="{{ c.permalink }}">{{ c.item.name }}</a></li>
                 {% endfor %}
                 </ul>
             </div>
