@@ -1,0 +1,9 @@
+{% extends 'base.njk' %}
+
+{%- block contents %}
+            <ul>
+            {%- for i in items %}
+            <li><a href="{{ i.permalink }}">{{ i.item.name }}</a></li>
+            {%- endfor %}
+            </ul>
+{%- endblock %}

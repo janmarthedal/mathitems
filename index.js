@@ -4,6 +4,7 @@ const markdown = require('metalsmith-markdownit');
 const mdKaTeX = require('@iktakahiro/markdown-it-katex');
 const getItems = require('./plugins/get-items');
 const resolveLinks = require('./plugins/resolve-links');
+const createListPages = require('./plugins/create-list-pages');
 
 Metalsmith(__dirname)
     .metadata({
@@ -11,6 +12,7 @@ Metalsmith(__dirname)
     })
     .use(getItems())
     .use(resolveLinks())
+    .use(createListPages())
     .use(markdown().use(mdKaTeX))
     .use(layouts())
     .build(function (err, files) {

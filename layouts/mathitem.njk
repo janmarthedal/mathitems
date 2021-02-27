@@ -7,7 +7,7 @@
 {%- block extraheader %}
             {% if item.defines %}
             <div>
-                Defines:
+                <p>Defines:</p>
                 <ul>
                 {%- for c in item.defines %}
                 <li><a href="{{ c.permalink }}">{{ c.title }}</a></li>
@@ -17,7 +17,7 @@
             {% endif %}
             {% if item.itemRefs %}
             <div>
-                Item references:
+                <p>Item references:</p>
                 <ul>
                 {%- for c in item.itemRefs %}
                 <li><a href="{{ c.permalink }}">{{ c.item.name }}</a></li>
@@ -27,7 +27,7 @@
             {% endif %}
             {% if item.conceptRefs %}
             <div>
-                Concept references:
+                <p>Concept references:</p>
                 <ul>
                 {%- for c in item.conceptRefs %}
                 <li><a href="{{ c.permalink }}">{{ c.title }}</a></li>
