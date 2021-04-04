@@ -1,0 +1,8 @@
+{% extends 'base.njk' %}
+
+{%- block contents %}
+{% if data.author %}Author: {{ data.author }}<br>{% endif %}
+{% if data.title %}Title: {{ data.title }}<br>{% endif %}
+{% if data.publisher %}Publisher: {{ data.publisher }}<br>{% endif %}
+{% if data.year %}Year: {{ data.year }}<br>{% endif %}
+{%- endblock %}

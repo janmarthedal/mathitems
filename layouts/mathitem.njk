@@ -35,4 +35,14 @@
                 </ul>
             </div>
             {% endif %}
+            {% if item.validations %}
+            <div>
+                <p>Validations:</p>
+                <ul>
+                {%- for c in item.validations %}
+                <li>{{ c.source|sourceShort|safe }}, {{ c.location }}</li>
+                {%- endfor %}
+                </ul>
+            </div>
+            {% endif %}
 {%- endblock %}
