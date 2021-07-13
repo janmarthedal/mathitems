@@ -5,41 +5,41 @@
 {%- endblock %}
 
 {%- block extraheader %}
-            {% if item.defines %}
+            {% if refs.defines %}
             <div>
                 <p>Defines:</p>
                 <ul>
-                {%- for c in item.defines %}
+                {%- for c in refs.defines %}
                 <li><a href="{{ c.permalink }}">{{ c.title }}</a></li>
                 {%- endfor %}
                 </ul>
             </div>
             {% endif %}
-            {% if item.itemRefs %}
+            {% if refs.itemRefs %}
             <div>
                 <p>Item references:</p>
                 <ul>
-                {%- for c in item.itemRefs %}
-                <li><a href="{{ c.permalink }}">{{ c.item.name }}</a></li>
+                {%- for c in refs.itemRefs %}
+                <li><a href="{{ c.permalink }}">{{ c.id }}</a></li>
                 {%- endfor %}
                 </ul>
             </div>
             {% endif %}
-            {% if item.conceptRefs %}
+            {% if refs.conceptRefs %}
             <div>
                 <p>Concept references:</p>
                 <ul>
-                {%- for c in item.conceptRefs %}
+                {%- for c in refs.conceptRefs %}
                 <li><a href="{{ c.permalink }}">{{ c.title }}</a></li>
                 {%- endfor %}
                 </ul>
             </div>
             {% endif %}
-            {% if item.validations %}
+            {% if refs.validations %}
             <div>
                 <p>Validations:</p>
                 <ul>
-                {%- for c in item.validations %}
+                {%- for c in refs.validations %}
                 <li>{{ c.source|sourceShort|safe }}, {{ c.location }}</li>
                 {%- endfor %}
                 </ul>

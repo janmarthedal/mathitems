@@ -1,41 +1,46 @@
 const { extname } = require('path');
 
-const SHORT_TO_TYPE = {
-    'D': 'Definition',
-    'T': 'Theorem'
-};
+/*
+From:
+---
+type: definition|theorem
+id: <ID>
+created: 2016-10-30T19:25:57Z
+creator: <USER>
+---
+<CONTENT>
+
+To:
+---
+title: Definition D1
+type: definition|theorem
+id: <ID>
+created: 2016-10-30T19:25:57Z
+creator: <USER>
+layout: mathitem.njk
+permalink: /D1/
+---
+<CONTENT>
+*/
+
+function capitalizeFirst(st) {
+    return st[0].toUpperCase() + st.substring(1);
+}
 
 module.exports = () => function(files, metalsmith, done) {
     setImmediate(done);
     const items = [];
-    const { sources, sourceRefs } = metalsmith.metadata();
+    // const { sources, sourceRefs } = metalsmith.metadata();
     for (const [file, data] of Object.entries(files)) {
-        const { title } = data;
-        if (title && SHORT_TO_TYPE[title[0]] && !Number.isNaN(+title.substring(1))) {
-            data.item = {
-                type: title[0],
-                name: title
-            };
-            data.title = SHORT_TO_TYPE[title[0]] + ' ' + title;
+        const { type, id } = data;
+        if (['definition', 'theorem'].includes(type) && id) {
+            data.title = capitalizeFirst(type) + ' ' + id;
             data.layout = 'mathitem.njk';
-            data.permalink = `/${title}/`;
-            if (data.validations) {
-                data.item.validations = data.validations.map(v => {
-                    if (!sources[v.source] && sourceRefs[v.source]) {
-                        v.source = sourceRefs[v.source];
-                    }
-                    if (!sources[v.source]) {
-                        throw new Error(`Missing source '${v.source}'`);
-                    }
-                    v.source = sources[v.source];
-                    return v;
-                });
-                delete data.validations;
-            }
+            data.permalink = `/${id}/`;
             items.push(data);
-            console.log(data);
             delete files[file];
-            files[title + '/index' + extname(file)] = data;
+            files[id + '/index' + extname(file)] = data;
+            console.log(data.title);
         }
     }
     metalsmith.metadata().items = items;
