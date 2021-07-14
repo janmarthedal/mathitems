@@ -1,4 +1,4 @@
-const { isItemNode } = require('./common');
+const { isItemNode } = require('../lib/common');
 
 function resolveLinks(graph) {
     graph.forEachNode(({ data }) => {

@@ -1,11 +1,11 @@
-const { isItemNode } = require('./common');
+const { isItemNode, forEachOutgoingNode, forEachIngoingNode } = require('../lib/common');
 
 function decorateItem(data, graph) {
     const itemNodeId = 'item:' + data.id;
     const defines = [];
     const conceptRefs = [];
     const itemRefs = [];
-    graph.forEachLinkedNode(itemNodeId, function(linkedNode, link) {
+    forEachOutgoingNode(graph, itemNodeId, function(linkedNode, link) {
         if (linkedNode.data.type === 'concept' && link.data.type === 'define-concept') {
             defines.push(linkedNode.data);
         }
@@ -15,7 +15,7 @@ function decorateItem(data, graph) {
         if (isItemNode(linkedNode.data) && link.data.type === 'use-item') {
             itemRefs.push(linkedNode.data);
         }
-    }, true);
+    });
     data.refs = {
         defines: defines.length !== 0 ? defines : undefined,
         conceptRefs: conceptRefs.length !== 0 ? conceptRefs : undefined,
@@ -26,7 +26,7 @@ function decorateItem(data, graph) {
 function decorateConcept(data, graph) {
     const conceptNodeId = 'concept:' + data.id;
     const items = [];
-    graph.forEachLinkedNode(conceptNodeId, function(linkedNode, link) {
+    forEachIngoingNode(graph, conceptNodeId, function(linkedNode, link) {
         if (isItemNode(linkedNode.data) && link.data.type === 'define-concept') {
             items.push(linkedNode.data);
         }

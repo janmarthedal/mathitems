@@ -1,4 +1,4 @@
-const { isItemNode } = require('./common');
+const { isItemNode } = require('../lib/common');
 
 function isLegalConcept(concept) {
     return /^[a-zA-Z-]+$/.test(concept);
