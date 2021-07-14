@@ -1,16 +1,26 @@
+function getItemListOfType(graph, type) {
+    const items = [];
+    graph.forEachNode(function({ data }) {
+        if (data.type === type) {
+            items.push(data);
+        }
+    });
+    return items;
+}
+
 module.exports = () => function(files, metalsmith, done) {
     setImmediate(done);
-    const { items } = metalsmith.metadata();
+    const { graph } = metalsmith.metadata();
     files['definitions/index.html'] = {
         title: 'Definitions',
         layout: 'item-list.njk',
-        items: items.filter(data => data.type === 'definition'),
+        items: getItemListOfType(graph, 'definition'),
         contents: Buffer.from('')
     };
     files['theorems/index.html'] = {
         title: 'Theorems',
         layout: 'item-list.njk',
-        items: items.filter(data => data.type === 'theorem'),
+        items: getItemListOfType(graph, 'theorem'),
         contents: Buffer.from('')
     };
 };

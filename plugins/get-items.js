@@ -1,4 +1,5 @@
 const { extname } = require('path');
+const createGraph = require('ngraph.graph');
 
 /*
 From:
@@ -29,19 +30,18 @@ function capitalizeFirst(st) {
 
 module.exports = () => function(files, metalsmith, done) {
     setImmediate(done);
-    const items = [];
-    // const { sources, sourceRefs } = metalsmith.metadata();
+    const graph = createGraph();
     for (const [file, data] of Object.entries(files)) {
         const { type, id } = data;
         if (['definition', 'theorem'].includes(type) && id) {
             data.title = capitalizeFirst(type) + ' ' + id;
             data.layout = 'mathitem.njk';
             data.permalink = `/${id}/`;
-            items.push(data);
+            graph.addNode('item:' + id, data);
             delete files[file];
             files[id + '/index' + extname(file)] = data;
             console.log(data.title);
         }
     }
-    metalsmith.metadata().items = items;
+    metalsmith.metadata().graph = graph;
 };
