@@ -1,5 +1,5 @@
 const { extname } = require('path');
-const createGraph = require('ngraph.graph');
+const { isItemNode } = require('../lib/common');
 
 /*
 From:
@@ -30,10 +30,13 @@ function capitalizeFirst(st) {
 
 module.exports = () => function(files, metalsmith, done) {
     setImmediate(done);
-    const graph = createGraph();
+    const { graph } = metalsmith.metadata();
     for (const [file, data] of Object.entries(files)) {
         const { type, id } = data;
-        if (['definition', 'theorem'].includes(type) && id) {
+        if (isItemNode(data)) {
+            if (!id) {
+                throw new Error(`${file} is missing 'id'`);
+            }
             data.title = capitalizeFirst(type) + ' ' + id;
             data.layout = 'mathitem.njk';
             data.permalink = `/${id}/`;
@@ -43,5 +46,4 @@ module.exports = () => function(files, metalsmith, done) {
             console.log(data.title);
         }
     }
-    metalsmith.metadata().graph = graph;
 };
