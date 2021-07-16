@@ -8,14 +8,21 @@ const createListPages = require('./plugins/create-list-pages');
 const decorateNodes = require('./plugins/decorate-nodes');
 const resolveLinks = require('./plugins/resolve-links');
 
-function sourceShort(source) {
-    return `<a href="${source.permalink}">${source.title}</a>`;
+// should not end with /
+const BASE_PATH = '';
+
+function url(path) {
+    return BASE_PATH + path;
 }
 
 Metalsmith(__dirname)
     .metadata({
-        sitename: "MathItems"
+        sitename: "MathItems",
+        basePath: BASE_PATH
     })
+    .source('./src')
+    .destination('./build')
+    .clean(true)
     .use(getItems())
     .use(createLinks())
     .use(decorateNodes())
@@ -25,7 +32,7 @@ Metalsmith(__dirname)
     .use(layouts({
         engineOptions: {
             filters: {
-                sourceShort
+                url
             }
         }
     }))

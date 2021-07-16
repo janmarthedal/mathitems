@@ -4,13 +4,14 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
 {%- endblock %}
 
-{%- block extraheader %}
+{%- block postheader %}
+        <aside>
             {% if refs.defines %}
             <div>
                 <p>Defines:</p>
                 <ul>
                 {%- for c in refs.defines %}
-                <li><a href="{{ c.permalink }}">{{ c.title }}</a></li>
+                <li><a href="{{ c.permalink|url }}">{{ c.title }}</a></li>
                 {%- endfor %}
                 </ul>
             </div>
@@ -20,7 +21,7 @@
                 <p>Item references:</p>
                 <ul>
                 {%- for c in refs.itemRefs %}
-                <li><a href="{{ c.permalink }}">{{ c.id }}</a></li>
+                <li><a href="{{ c.permalink|url }}">{{ c.id }}</a></li>
                 {%- endfor %}
                 </ul>
             </div>
@@ -30,7 +31,7 @@
                 <p>Concept references:</p>
                 <ul>
                 {%- for c in refs.conceptRefs %}
-                <li><a href="{{ c.permalink }}">{{ c.title }}</a></li>
+                <li><a href="{{ c.permalink|url }}">{{ c.title }}</a></li>
                 {%- endfor %}
                 </ul>
             </div>
@@ -45,4 +46,5 @@
                 </ul>
             </div>
             {% endif %}
+        </aside>
 {%- endblock %}

@@ -1,6 +1,6 @@
 const { isItemNode } = require('../lib/common');
 
-function resolveLinks(graph) {
+function resolveLinks(graph, basePath) {
     graph.forEachNode(({ data }) => {
         if (!isItemNode(data)) {
             return;
@@ -13,13 +13,13 @@ function resolveLinks(graph) {
             const [itemRef, conceptRef] = link.split('#');
             if (conceptRef && !itemRef) {
                 const conceptNode = graph.getNode('concept:' + conceptRef);
-                return `[${text}](${conceptNode.data.permalink})`;
+                return `[${text}](${basePath}${conceptNode.data.permalink})`;
             }
             const refItemData = graph.getNode('item:' + itemRef).data;
             if (!refItemData.refs.defines.map(d => d.id).includes(conceptRef)) {
                 throw Error(`${data.id}: Item ${itemRef} does not define ${conceptRef}`);
             }
-            return conceptRef ? `[${text}](${refItemData.permalink}#${conceptRef})` : `[${text}](${refItemData.permalink})`;
+            return conceptRef ? `[${text}](${basePath}${refItemData.permalink}#${conceptRef})` : `[${text}](${basePath}${refItemData.permalink})`;
         });
         data.contents = Buffer.from(contents);
     });
@@ -27,6 +27,6 @@ function resolveLinks(graph) {
 
 module.exports = () => function(_files, metalsmith, done) {
     setImmediate(done);
-    const { graph } = metalsmith.metadata();
-    resolveLinks(graph);
+    const { graph, basePath } = metalsmith.metadata();
+    resolveLinks(graph, basePath);
 };

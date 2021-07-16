@@ -1,0 +1,29 @@
+html {
+    line-height: 1.15;
+    -webkit-text-size-adjust: 100%;
+}
+body {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    line-height: 1.43;
+    font-size: 100%;
+    color: #333;
+    background-color: #fff;
+    margin: 0;
+}
+aside p {
+    display: inline;
+}
+aside ul {
+    display: inline;
+    padding: 0;
+}
+aside li {
+    display: inline;
+}
+header, main, aside {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 60rem;
+    max-width: 100%;
+}
