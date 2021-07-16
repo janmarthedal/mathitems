@@ -25,6 +25,7 @@
     "jstransformer-nunjucks": "^1.0.0",
     "metalsmith": "^2.3.0",
     "metalsmith-layouts": "^2.3.1",
+    "metalsmith-less": "^2.0.0",
     "metalsmith-markdownit": "^0.5.0",
     "ngraph.graph": "^19.1.0"
   }

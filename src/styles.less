@@ -1,0 +1,45 @@
+@fg-color: #333;
+@frame-color: #ddd;
+
+html {
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  line-height: 1.43;
+  font-size: 100%;
+  color: @fg-color;
+  background-color: #fff;
+  margin: 0;
+}
+
+header,
+main,
+aside {
+  display: block;
+  margin: 0 auto;
+  width: 60rem;
+  max-width: 100%;
+}
+
+main,
+aside {
+  border: 2px solid @frame-color;
+  padding: 0.5em;
+  border-radius: 0.2em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+aside.references {
+  p,
+  ul,
+  li {
+    display: inline;
+  }
+  ul {
+    padding: 0;
+  }
+}
