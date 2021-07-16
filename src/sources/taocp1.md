@@ -2,7 +2,7 @@
 type: source
 id: taocp1
 subtype: book
-title: The Art of Computer Programming, Vol. 1: Fundamental Algorithms, 3rd Edition
+title: "The Art of Computer Programming, Vol. 1: Fundamental Algorithms, 3rd Edition"
 author: Knuth, Donald
 publisher: Addison-Wesley Professional
 year: 1997

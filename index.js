@@ -5,6 +5,7 @@ const less = require('metalsmith-less')
 const createGraph = require('ngraph.graph');
 const mdKaTeX = require('@iktakahiro/markdown-it-katex');
 const getItems = require('./plugins/get-items');
+const getSources = require('./plugins/get-sources');
 const createLinks = require('./plugins/create-links');
 const createListPages = require('./plugins/create-list-pages');
 const decorateNodes = require('./plugins/decorate-nodes');
@@ -28,6 +29,7 @@ Metalsmith(__dirname)
     .destination('./build')
     .clean(true)
     .use(getItems())
+    .use(getSources())
     .use(createLinks())
     .use(decorateNodes())
     .use(resolveLinks())
