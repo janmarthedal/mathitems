@@ -48,3 +48,9 @@
             {% endif %}
         </aside>
 {%- endblock %}
+
+{%- block contents %}
+<article>
+    {{ contents | safe }}
+</article>
+{%- endblock %}

@@ -2,13 +2,12 @@
 @frame-color: #ddd;
 
 html {
-  line-height: 1.15;
+  line-height: 1.43;
   -webkit-text-size-adjust: 100%;
 }
 
 body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  line-height: 1.43;
   font-size: 100%;
   color: @fg-color;
   background-color: #fff;
@@ -24,13 +23,22 @@ aside {
   max-width: 100%;
 }
 
-main,
+aside,
+main {
+    margin-top: 6px;
+    margin-bottom: 6px;  
+}
+
+article,
 aside {
   border: 2px solid @frame-color;
-  padding: 0.5em;
+  padding: 6px;
   border-radius: 0.2em;
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
+}
+
+article {
+    margin-left: -8px;
+    margin-right: -8px;
 }
 
 aside.references {
