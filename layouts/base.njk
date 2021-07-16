@@ -11,14 +11,11 @@
     <body>
         <header>
             <h1>{{ sitename }}</h1>
-            <h2>{{ title | safe }}</h2>
         </header>
-        {%- block postheader %}
-        {%- endblock %}
+        {%- block contents %}
         <main>
-            {%- block contents %}
             {{ contents | safe }}
-            {%- endblock %}
         </main>
+        {%- endblock %}
     </body>
 </html>

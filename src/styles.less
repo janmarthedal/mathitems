@@ -1,5 +1,9 @@
 @fg-color: #333;
-@frame-color: #ddd;
+@frame-color: #bbb;
+
+*, ::after, ::before {
+  box-sizing: border-box;
+}
 
 html {
   line-height: 1.43;
@@ -12,33 +16,24 @@ body {
   color: @fg-color;
   background-color: #fff;
   margin: 0;
+  padding: 0;
 }
 
 header,
 main,
-aside {
+article {
   display: block;
   margin: 0 auto;
   width: 60rem;
   max-width: 100%;
 }
 
-aside,
-main {
-    margin-top: 6px;
-    margin-bottom: 6px;  
-}
-
-article,
-aside {
+aside, div.item {
   border: 2px solid @frame-color;
   padding: 6px;
-  border-radius: 0.2em;
-}
-
-article {
-    margin-left: -8px;
-    margin-right: -8px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  border-radius: 6px;
 }
 
 aside.references {

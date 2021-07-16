@@ -1,9 +1,11 @@
 {% extends 'base.njk' %}
 
 {%- block contents %}
-            <ul>
-            {%- for i in items %}
-            <li><a href="{{ i.permalink|url }}">{{ i.id }}</a></li>
-            {%- endfor %}
-            </ul>
+<main>
+    <h2>{{ title }}</h2>
+    <ul>
+    {%- for i in items %}
+    <li><a href="{{ i.permalink|url }}">{{ i.id }}</a></li>
+    {%- endfor %}
+    </ul>
 {%- endblock %}

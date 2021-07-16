@@ -4,53 +4,54 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
 {%- endblock %}
 
-{%- block postheader %}
-        <aside class="references">
-            {% if refs.defines %}
-            <div>
-                <p>Defines:</p>
-                <ul>
-                {%- for c in refs.defines %}
-                <li><a href="{{ c.permalink|url }}">{{ c.title }}</a></li>
-                {%- endfor %}
-                </ul>
-            </div>
-            {% endif %}
-            {% if refs.itemRefs %}
-            <div>
-                <p>Item references:</p>
-                <ul>
-                {%- for c in refs.itemRefs %}
-                <li><a href="{{ c.permalink|url }}">{{ c.id }}</a></li>
-                {%- endfor %}
-                </ul>
-            </div>
-            {% endif %}
-            {% if refs.conceptRefs %}
-            <div>
-                <p>Concept references:</p>
-                <ul>
-                {%- for c in refs.conceptRefs %}
-                <li><a href="{{ c.permalink|url }}">{{ c.title }}</a></li>
-                {%- endfor %}
-                </ul>
-            </div>
-            {% endif %}
-            {% if refs.validations %}
-            <div>
-                <p>Validations:</p>
-                <ul>
-                {%- for c in refs.validations %}
-                <li>{{ c.source|sourceShort|safe }}, {{ c.location }}</li>
-                {%- endfor %}
-                </ul>
-            </div>
-            {% endif %}
-        </aside>
-{%- endblock %}
-
 {%- block contents %}
 <article>
+    <h2>{{ title }}</h2>
+
+    <aside class="references">
+        {% if refs.defines %}
+        <div>
+            <p>Defines:</p>
+            <ul>
+            {%- for c in refs.defines %}
+            <li><a href="{{ c.permalink|url }}">{{ c.title }}</a></li>
+            {%- endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% if refs.itemRefs %}
+        <div>
+            <p>Item references:</p>
+            <ul>
+            {%- for c in refs.itemRefs %}
+            <li><a href="{{ c.permalink|url }}">{{ c.id }}</a></li>
+            {%- endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% if refs.conceptRefs %}
+        <div>
+            <p>Concept references:</p>
+            <ul>
+            {%- for c in refs.conceptRefs %}
+            <li><a href="{{ c.permalink|url }}">{{ c.title }}</a></li>
+            {%- endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% if refs.validations %}
+        <div>
+            <p>Validations:</p>
+            <ul>
+            {%- for c in refs.validations %}
+            <li>{{ c.source|sourceShort|safe }}, {{ c.location }}</li>
+            {%- endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </aside>
+
+    <div class="item">
     {{ contents | safe }}
-</article>
+    </div>
 {%- endblock %}
