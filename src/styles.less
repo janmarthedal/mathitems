@@ -1,7 +1,9 @@
 @fg-color: #333;
 @frame-color: #bbb;
 
-*, ::after, ::before {
+*,
+::after,
+::before {
   box-sizing: border-box;
 }
 
@@ -28,7 +30,8 @@ article {
   max-width: 100%;
 }
 
-aside, div.item {
+aside,
+div.item {
   border: 2px solid @frame-color;
   padding: 6px;
   margin-top: 4px;
@@ -40,9 +43,18 @@ aside.references {
   p,
   ul,
   li {
-    display: inline;
+    display: inline-block;
   }
   ul {
     padding: 0;
+  }
+}
+
+aside.validations {
+  & > p {
+    margin-bottom: 4px;
+  }
+  & > ul {
+    margin-top: 4px;
   }
 }

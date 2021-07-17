@@ -12,7 +12,6 @@
         {%- set defines = id | itemDefines -%}
         {%- set itemRefs = id | itemItemRefs -%}
         {%- set conceptRefs = id | itemConceptRefs -%}
-        {%- set validations = id | itemValidations -%}
         {% if defines | length %}
         <div>
             <p>Defines:</p>
@@ -58,4 +57,17 @@
     <div class="item">
     {{ contents | safe }}
     </div>
+
+    <aside class="validations">
+        {%- set validations = id | itemValidations -%}
+        {% if validations | length %}
+        <p>Validations:</p>
+        <ul>
+        {%- for v in validations %}
+        <li>{{ v.source.data.author }}, {{ v.source.data.title }}, {{ v.location }}</li>
+        {%- endfor %}
+        </ul>
+        {% endif %}
+    </aside>
+
 {%- endblock %}
