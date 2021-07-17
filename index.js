@@ -9,7 +9,8 @@ const getSources = require('./plugins/get-sources');
 const createLinks = require('./plugins/create-links');
 const createListPages = require('./plugins/create-list-pages');
 const resolveLinks = require('./plugins/resolve-links');
-const { itemDefines, itemConceptRefs, itemItemRefs, conceptDefinedBy } = require('./lib/graph-queries');
+const validationLinks = require('./plugins/validation-links');
+const { itemDefines, itemConceptRefs, itemItemRefs, itemValidations, conceptDefinedBy } = require('./lib/graph-queries');
 
 // BASE_PATH should not end with slash
 const BASE_PATH = '';
@@ -31,6 +32,7 @@ Metalsmith(__dirname)
     .use(getItems())
     .use(getSources())
     .use(createLinks())
+    .use(validationLinks())
     .use(resolveLinks())
     .use(createListPages())
     .use(markdown().use(mdKaTeX))
@@ -41,6 +43,7 @@ Metalsmith(__dirname)
                 itemDefines: id => itemDefines(graph, id),
                 itemConceptRefs: id => itemConceptRefs(graph, id),
                 itemItemRefs: id => itemItemRefs(graph, id),
+                itemValidations: id => itemValidations(graph, id),
                 conceptDefinedBy: id => conceptDefinedBy(graph, id),
             }
         }

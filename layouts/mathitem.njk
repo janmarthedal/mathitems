@@ -12,7 +12,8 @@
         {%- set defines = id | itemDefines -%}
         {%- set itemRefs = id | itemItemRefs -%}
         {%- set conceptRefs = id | itemConceptRefs -%}
-        {% if defines %}
+        {%- set validations = id | itemValidations -%}
+        {% if defines | length %}
         <div>
             <p>Defines:</p>
             <ul>
@@ -22,7 +23,7 @@
             </ul>
         </div>
         {% endif %}
-        {% if itemRefs %}
+        {% if itemRefs | length %}
         <div>
             <p>Item references:</p>
             <ul>
@@ -32,7 +33,7 @@
             </ul>
         </div>
         {% endif %}
-        {% if conceptRefs %}
+        {% if conceptRefs | length %}
         <div>
             <p>Concept references:</p>
             <ul>
@@ -42,12 +43,12 @@
             </ul>
         </div>
         {% endif %}
-        {% if refs.validations %}
+        {% if validations | length %}
         <div>
             <p>Validations:</p>
             <ul>
-            {%- for c in refs.validations %}
-            <li>{{ c.source|sourceShort|safe }}, {{ c.location }}</li>
+            {%- for v in validations %}
+            <li>{{ v.source.data.author }}, {{ v.source.data.title }}, {{ v.location }}</li>
             {%- endfor %}
             </ul>
         </div>

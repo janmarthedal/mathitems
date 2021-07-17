@@ -20,7 +20,7 @@ module.exports = () => function(files, metalsmith, done) {
             data.layout = 'source.njk';
             data.permalink = `/sources/${id}/`;
             data.data = source;
-            graph.addNode('source:' + id, source);
+            graph.addNode('source:' + id, data);
             delete files[file];
             files['sources/' + id + '/index' + extname(file)] = data;
             console.log(data.title);
