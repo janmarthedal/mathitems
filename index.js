@@ -8,8 +8,8 @@ const getItems = require('./plugins/get-items');
 const getSources = require('./plugins/get-sources');
 const createLinks = require('./plugins/create-links');
 const createListPages = require('./plugins/create-list-pages');
-const decorateNodes = require('./plugins/decorate-nodes');
 const resolveLinks = require('./plugins/resolve-links');
+const { itemDefines, itemConceptRefs, itemItemRefs, conceptDefinedBy } = require('./lib/graph-queries');
 
 // BASE_PATH should not end with slash
 const BASE_PATH = '';
@@ -31,14 +31,17 @@ Metalsmith(__dirname)
     .use(getItems())
     .use(getSources())
     .use(createLinks())
-    .use(decorateNodes())
     .use(resolveLinks())
     .use(createListPages())
     .use(markdown().use(mdKaTeX))
     .use(layouts({
         engineOptions: {
             filters: {
-                url
+                url,
+                itemDefines: id => itemDefines(graph, id),
+                itemConceptRefs: id => itemConceptRefs(graph, id),
+                itemItemRefs: id => itemItemRefs(graph, id),
+                conceptDefinedBy: id => conceptDefinedBy(graph, id),
             }
         }
     }))

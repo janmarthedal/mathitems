@@ -9,31 +9,34 @@
     <h2>{{ title }}</h2>
 
     <aside class="references">
-        {% if refs.defines %}
+        {%- set defines = id | itemDefines -%}
+        {%- set itemRefs = id | itemItemRefs -%}
+        {%- set conceptRefs = id | itemConceptRefs -%}
+        {% if defines %}
         <div>
             <p>Defines:</p>
             <ul>
-            {%- for c in refs.defines %}
+            {%- for c in defines %}
             <li><a href="{{ c.permalink|url }}">{{ c.title }}</a></li>
             {%- endfor %}
             </ul>
         </div>
         {% endif %}
-        {% if refs.itemRefs %}
+        {% if itemRefs %}
         <div>
             <p>Item references:</p>
             <ul>
-            {%- for c in refs.itemRefs %}
+            {%- for c in itemRefs %}
             <li><a href="{{ c.permalink|url }}">{{ c.id }}</a></li>
             {%- endfor %}
             </ul>
         </div>
         {% endif %}
-        {% if refs.conceptRefs %}
+        {% if conceptRefs %}
         <div>
             <p>Concept references:</p>
             <ul>
-            {%- for c in refs.conceptRefs %}
+            {%- for c in conceptRefs %}
             <li><a href="{{ c.permalink|url }}">{{ c.title }}</a></li>
             {%- endfor %}
             </ul>

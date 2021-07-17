@@ -1,4 +1,5 @@
 const { isItemNode } = require('../lib/common');
+const { itemDefinesConcept } = require('../lib/graph-queries');
 
 function resolveLinks(graph, basePath) {
     graph.forEachNode(({ data }) => {
@@ -16,7 +17,7 @@ function resolveLinks(graph, basePath) {
                 return `[${text}](${basePath}${conceptNode.data.permalink})`;
             }
             const refItemData = graph.getNode('item:' + itemRef).data;
-            if (!refItemData.refs.defines.map(d => d.id).includes(conceptRef)) {
+            if (!itemDefinesConcept(graph, itemRef, conceptRef)) {
                 throw Error(`${data.id}: Item ${itemRef} does not define ${conceptRef}`);
             }
             return conceptRef ? `[${text}](${basePath}${refItemData.permalink}#${conceptRef})` : `[${text}](${basePath}${refItemData.permalink})`;

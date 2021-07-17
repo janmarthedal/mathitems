@@ -3,6 +3,7 @@
 {%- block contents %}
 <main>
     <h2>{{ title }}</h2>
+    {%- set items = id | conceptDefinedBy -%}
     {% if items|length %}
     <p>Items defining this concept:</p>
     <ul>
