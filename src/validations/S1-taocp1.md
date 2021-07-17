@@ -10,4 +10,19 @@ validations:
   - source: S1
     item: T3
     location: Equation 8, page 76
+  - item: D9
+    source: S1
+    location: Equation 2, page 79
+  - item: T10
+    source: S1
+    location: Equation 4, page 81
+  - item: T11
+    source: S1
+    location: Equation 5, page 81
+  - item: T12
+    source: S1
+    location: Equation 6, page 81
+  - item: T37
+    source: S1
+    location: Page 83
 ---

@@ -17,7 +17,7 @@ function resolveLinks(graph, basePath) {
                 return `[${text}](${basePath}${conceptNode.data.permalink})`;
             }
             const refItemData = graph.getNode('item:' + itemRef).data;
-            if (!itemDefinesConcept(graph, itemRef, conceptRef)) {
+            if (conceptRef && !itemDefinesConcept(graph, itemRef, conceptRef)) {
                 throw Error(`${data.id}: Item ${itemRef} does not define ${conceptRef}`);
             }
             return conceptRef ? `[${text}](${basePath}${refItemData.permalink}#${conceptRef})` : `[${text}](${basePath}${refItemData.permalink})`;

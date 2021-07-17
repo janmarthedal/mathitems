@@ -1,0 +1,22 @@
+---
+type: validations
+validations:
+  - item: D26
+    source: S5
+    location: Page 1
+  - item: D27
+    source: S5
+    location: Page 1
+  - item: D29
+    source: S5
+    location: Page 1
+  - item: D30
+    source: S5
+    location: Page 1
+  - item: D31
+    source: S5
+    location: Page 2
+  - item: D32
+    source: S5
+    location: Page 1
+---
