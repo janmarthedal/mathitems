@@ -71,7 +71,7 @@ function createLinks(files, graph) {
             const toItemNodeId = 'item:' + itemRef;
             const toItemNode = graph.getNode(toItemNodeId);
             if (!toItemNode) {
-                throw new Error('Reference to unknown item: ' + match);
+                throw new Error(`${data.id} references unknown item ${match}`);
             }
             graph.addLink(itemNodeId, toItemNodeId, { type: 'use-item' });
             console.log(`${data.id} uses item ${itemRef}`);
