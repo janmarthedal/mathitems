@@ -10,6 +10,7 @@ const createLinks = require('./plugins/create-links');
 const itemListPages = require('./plugins/item-list-pages');
 const resolveLinks = require('./plugins/resolve-links');
 const validationLinks = require('./plugins/validation-links');
+const conceptsListPage = require('./plugins/concepts-list-page');
 const { itemDefines, itemConceptRefs, itemItemRefs, itemValidations, conceptDefinedBy } = require('./lib/graph-queries');
 
 // BASE_PATH should not end with slash
@@ -35,6 +36,7 @@ Metalsmith(__dirname)
     .use(validationLinks())
     .use(resolveLinks())
     .use(itemListPages())
+    .use(conceptsListPage())
     .use(markdown().use(mdKaTeX))
     .use(layouts({
         engineOptions: {
