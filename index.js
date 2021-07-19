@@ -7,7 +7,7 @@ const mdKaTeX = require('@iktakahiro/markdown-it-katex');
 const getItems = require('./plugins/get-items');
 const getSources = require('./plugins/get-sources');
 const createLinks = require('./plugins/create-links');
-const createListPages = require('./plugins/create-list-pages');
+const itemListPages = require('./plugins/item-list-pages');
 const resolveLinks = require('./plugins/resolve-links');
 const validationLinks = require('./plugins/validation-links');
 const { itemDefines, itemConceptRefs, itemItemRefs, itemValidations, conceptDefinedBy } = require('./lib/graph-queries');
@@ -34,7 +34,7 @@ Metalsmith(__dirname)
     .use(createLinks())
     .use(validationLinks())
     .use(resolveLinks())
-    .use(createListPages())
+    .use(itemListPages())
     .use(markdown().use(mdKaTeX))
     .use(layouts({
         engineOptions: {

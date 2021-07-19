@@ -11,12 +11,12 @@ function makeConceptNode(concept, graph, files) {
             title: concept,
             id: concept,
             type: 'concept',
-            permalink: `/concept/${concept}/`,
+            permalink: `/concepts/${concept}/`,
             layout: 'concept.njk',
             contents: Buffer.from('')
         };
         graph.addNode(conceptNodeId, data);
-        files[`concept/${concept}/index.html`] = data;
+        files[`concepts/${concept}/index.html`] = data;
     }
     return conceptNodeId;
 }
