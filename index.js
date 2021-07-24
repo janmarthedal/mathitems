@@ -21,6 +21,8 @@ function url(path) {
     return BASE_PATH + path;
 }
 
+// const dateTimeFormatter = new Intl.DateTimeFormat('default', {year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric',timeZoneName:'short'});
+
 Metalsmith(__dirname)
     .metadata({
         sitename: "MathItems",
@@ -47,6 +49,7 @@ Metalsmith(__dirname)
                 itemItemRefs: id => itemItemRefs(graph, id),
                 itemValidations: id => itemValidations(graph, id),
                 conceptDefinedBy: id => conceptDefinedBy(graph, id),
+                formatDate: date => date.toISOString().substring(0, 16).replace('T', ' '),
             }
         }
     }))
