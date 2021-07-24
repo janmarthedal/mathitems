@@ -21,8 +21,6 @@ function url(path) {
     return BASE_PATH + path;
 }
 
-// const dateTimeFormatter = new Intl.DateTimeFormat('default', {year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric',timeZoneName:'short'});
-
 Metalsmith(__dirname)
     .metadata({
         sitename: "MathItems",

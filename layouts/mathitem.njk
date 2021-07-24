@@ -42,12 +42,12 @@
             </ul>
         </div>
         {% endif %}
-        {% if validations | length %}
+        {% if keywords | length %}
         <div>
-            <p>Validations:</p>
+            <p>Keywords:</p>
             <ul>
-            {%- for v in validations %}
-            <li>{{ v.source.data.author }}, {{ v.source.data.title }}, {{ v.location }}</li>
+            {%- for kw in keywords %}
+            <li>{{ kw }}</li>
             {%- endfor %}
             </ul>
         </div>
@@ -60,6 +60,7 @@
 
     <aside class="validations">
         {%- set validations = id | itemValidations -%}
+        <p>Created at {{ created | formatDate }}</p>
         {% if validations | length %}
         <p>Validations:</p>
         <ul>

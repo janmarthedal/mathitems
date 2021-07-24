@@ -13,6 +13,11 @@
         <span>{{ c.id }}</span>
         {%- endfor %}<br>
         {%- endif %}
+        {%- if i.keywords | length %}
+        {%- for kw in i.keywords %}
+        <span>{{ kw }}</span>
+        {%- endfor %}<br>
+        {%- endif %}
         Created at {{ i.created | formatDate }}
     </li>
     {%- endfor %}
