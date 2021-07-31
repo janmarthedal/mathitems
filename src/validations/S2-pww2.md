@@ -16,4 +16,7 @@ validations:
   - item: T36
     source: S2
     location: Page 107
+  - item: D46
+    source: S2
+    location: Page 103
 ---
