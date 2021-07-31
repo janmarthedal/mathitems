@@ -25,6 +25,9 @@ validations:
   - item: T37
     source: S1
     location: Page 83
+  - item: T43
+    source: S1
+    location: Page 19
   - item: T57
     source: S1
     location: Page 81
