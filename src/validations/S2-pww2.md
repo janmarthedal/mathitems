@@ -19,4 +19,7 @@ validations:
   - item: D46
     source: S2
     location: Page 103
+  - item: T47
+    source: S2
+    location: Page 83
 ---
