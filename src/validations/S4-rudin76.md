@@ -46,4 +46,7 @@ validations:
   - item: T35
     source: S4
     location: Theorem 3.26, page 61
+  - item: T48
+    source: S4
+    location: Section 3.28, page 62
 ---
