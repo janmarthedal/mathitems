@@ -43,6 +43,9 @@ validations:
   - item: T45
     source: S1
     location: Page 35
+  - item: D52
+    source: S1
+    location: Page 53
   - item: T57
     source: S1
     location: Page 81
