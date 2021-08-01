@@ -7,6 +7,9 @@ validations:
   - item: T27
     source: S6
     location: Page 156
+  - item: T28
+    source: S6
+    location: Page 156
   - item: T79
     source: S6
     location: Page 33

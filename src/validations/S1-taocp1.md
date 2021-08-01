@@ -34,6 +34,9 @@ validations:
   - item: T27
     source: S1
     location: Page 55
+  - item: T28
+    source: S1
+    location: Page 55
   - item: T37
     source: S1
     location: Page 83
