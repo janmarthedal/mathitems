@@ -22,6 +22,9 @@ validations:
   - item: T12
     source: S1
     location: Equation 6, page 81
+  - item: T23
+    source: S1
+    location: Page 41
   - item: T37
     source: S1
     location: Page 83
