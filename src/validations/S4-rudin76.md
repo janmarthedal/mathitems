@@ -49,4 +49,7 @@ validations:
   - item: T48
     source: S4
     location: Section 3.28, page 62
+  - item: T62
+    source: S4
+    location: Section 3.26, page 61
 ---

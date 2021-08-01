@@ -25,33 +25,15 @@ validations:
   - item: T23
     source: S1
     location: Page 41
-  - item: T24
-    source: S1
-    location: Page 76
-  - item: T25
-    source: S1
-    location: Page 52
-  - item: T27
-    source: S1
-    location: Page 55
   - item: T28
     source: S1
     location: Page 55
-  - item: T29
-    source: S1
-    location: Page 55
-  - item: T30
-    source: S1
-    location: Page 57
-  - item: T31
-    source: S1
-    location: Page 57
-  - item: T32
-    source: S1
-    location: Page 57
   - item: T37
     source: S1
     location: Page 83
+  - item: T42
+    source: S1
+    location: Page 76
   - item: T43
     source: S1
     location: Page 19
@@ -61,12 +43,33 @@ validations:
   - item: T45
     source: S1
     location: Page 35
+  - item: T49
+    source: S1
+    location: Page 52
   - item: D52
     source: S1
     location: Page 53
+  - item: T53
+    source: S1
+    location: Page 55
+  - item: T55
+    source: S1
+    location: Page 55
+  - item: T56
+    source: S1
+    location: Page 57
   - item: T57
     source: S1
     location: Page 81
+  - item: T59
+    source: S1
+    location: Page 57
+  - item: T60
+    source: S1
+    location: Page 57
+  - item: T61
+    source: S1
+    location: Page 58
   - item: T79
     source: S1
     location: Page 35

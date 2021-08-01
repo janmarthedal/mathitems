@@ -4,13 +4,13 @@ validations:
   - item: D52
     source: S6
     location: Page 154
-  - item: T27
-    source: S6
-    location: Page 156
   - item: T28
     source: S6
     location: Page 156
-  - item: T30
+  - item: T53
+    source: S6
+    location: Page 156
+  - item: T56
     source: S6
     location: Page 43
   - item: T79
