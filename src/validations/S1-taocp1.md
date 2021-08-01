@@ -43,6 +43,12 @@ validations:
   - item: T30
     source: S1
     location: Page 57
+  - item: T31
+    source: S1
+    location: Page 57
+  - item: T32
+    source: S1
+    location: Page 57
   - item: T37
     source: S1
     location: Page 83
