@@ -31,12 +31,18 @@ function capitalizeFirst(st) {
 module.exports = () => function(files, metalsmith, done) {
     setImmediate(done);
     const { graph } = metalsmith.metadata();
+    const numberMap = {};
     for (const [file, data] of Object.entries(files)) {
         const { type, id } = data;
         if (isItemNode(data)) {
             if (!id) {
                 throw new Error(`${file} is missing 'id'`);
             }
+            const number = id.substring(1);
+            if (numberMap[number]) {
+                throw new Error(`Duplicate number: ${id} and ${numberMap[number]}`);
+            }
+            numberMap[number] = id;
             data.title = capitalizeFirst(type) + ' ' + id;
             data.layout = 'mathitem.njk';
             data.permalink = `/${id}/`;

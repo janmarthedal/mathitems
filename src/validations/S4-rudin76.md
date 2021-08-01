@@ -28,9 +28,6 @@ validations:
   - item: T22
     source: S4
     location: Theorem 3.2(b), page 48
-  - item: P23
-    source: S4
-    location: Page 49
   - item: D24
     source: S4
     location: Definition 3.1, page 47
@@ -52,4 +49,7 @@ validations:
   - item: T62
     source: S4
     location: Section 3.26, page 61
+  - item: P80
+    source: S4
+    location: Page 49
 ---
