@@ -28,6 +28,9 @@ validations:
   - item: T24
     source: S1
     location: Page 76
+  - item: T25
+    source: S1
+    location: Page 52
   - item: T37
     source: S1
     location: Page 83
