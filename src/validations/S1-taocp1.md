@@ -40,6 +40,9 @@ validations:
   - item: T29
     source: S1
     location: Page 55
+  - item: T30
+    source: S1
+    location: Page 57
   - item: T37
     source: S1
     location: Page 83

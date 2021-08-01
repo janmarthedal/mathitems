@@ -10,6 +10,9 @@ validations:
   - item: T28
     source: S6
     location: Page 156
+  - item: T30
+    source: S6
+    location: Page 43
   - item: T79
     source: S6
     location: Page 33
