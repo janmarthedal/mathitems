@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rimraf build",
     "build": "node index",
     "serve": "http-server ./build"
   },
@@ -27,6 +28,7 @@
     "metalsmith-layouts": "^2.3.1",
     "metalsmith-less": "^2.0.0",
     "metalsmith-markdownit": "^0.5.0",
-    "ngraph.graph": "^19.1.0"
+    "ngraph.graph": "^19.1.0",
+    "rimraf": "^2.7.1"
   }
 }

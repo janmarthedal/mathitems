@@ -6,6 +6,7 @@ const createGraph = require('ngraph.graph');
 const mdKaTeX = require('@iktakahiro/markdown-it-katex');
 const getItems = require('./plugins/get-items');
 const getSources = require('./plugins/get-sources');
+const getMedia = require('./plugins/get-media');
 const createLinks = require('./plugins/create-links');
 const itemListPages = require('./plugins/item-list-pages');
 const resolveLinks = require('./plugins/resolve-links');
@@ -32,6 +33,7 @@ Metalsmith(__dirname)
     .clean(true)
     .use(getItems())
     .use(getSources())
+    .use(getMedia())
     .use(createLinks())
     .use(validationLinks())
     .use(resolveLinks())
