@@ -11,7 +11,7 @@ module.exports = () => function(files, metalsmith, done) {
             }
             data.title = 'Media ' + id;
             data.layout = 'media.njk';
-            data.permalink = `/media/${id}/`;
+            data.permalink = `/${id}/`;
             graph.addNode('media:' + id, data);
             delete files[file];
             files[id + '/index' + extname(file)] = data;

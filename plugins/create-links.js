@@ -29,7 +29,12 @@ function createLinks(files, graph) {
         const itemNodeId = 'item:' + data.id;
         let contents = data.contents.toString();
 
-        contents.replace(/\[(.*?)\]\((.*?)\)/gm, (match, _text, link) => {
+        contents.replace(/(!?)\[(.*?)\]\((.*?)\)/gm, (match, bang, _text, link) => {
+            if (bang) {
+                const mediaNodeId = 'media:' + link;
+                graph.addLink(itemNodeId, mediaNodeId, { type: 'use-media' });
+                return;
+            }
             if (link.startsWith('=')) {
                 if (data.type !== 'definition') {
                     throw new Error('Only Definitions may define');

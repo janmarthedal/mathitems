@@ -7,7 +7,11 @@ function resolveLinks(graph, basePath) {
             return;
         }
         let contents = data.contents.toString();
-        contents = contents.replace(/\[(.*?)\]\((.*?)\)/gm, (_match, text, link) => {
+        contents = contents.replace(/(!?)\[(.*?)\]\((.*?)\)/gm, (_match, bang, text, link) => {
+            if (bang) {
+                const mediaNode = graph.getNode('media:' + link);
+                return `![${text || link}](${mediaNode.data.path})`;
+            }
             if (link.startsWith('=')) {
                 return '*' + text + '*';
             }
