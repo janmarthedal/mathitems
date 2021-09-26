@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg width="113.25mm" height="54.864mm" version="1.1" viewBox="0 0 113.25 54.864" xmlns="http://www.w3.org/2000/svg">
+ <path d="m72.452 28.79 16.858-12.268" fill="none" stroke="#808080" stroke-linecap="round" stroke-width=".5"/>
+ <ellipse cx="72.452" cy="28.79" rx="21" ry="20.849" fill="none" stroke="#808080" stroke-linejoin="round" stroke-width=".5"/>
+ <g fill="#000000" font-family="sans-serif" font-size="6.35px" stroke-width=".26458">
+  <text x="55.343964" y="54.767773" style="line-height:1.25" xml:space="preserve"><tspan x="55.343964" y="54.767773" font-size="6.35px" stroke-width=".26458">a</tspan></text>
+  <text x="94.792435" y="23.491688" style="line-height:1.25" xml:space="preserve"><tspan x="94.792435" y="23.491688" font-size="6.35px" stroke-width=".26458">c</tspan></text>
+  <text x="37.97168" y="22.678913" style="line-height:1.25" xml:space="preserve"><tspan x="37.97168" y="22.678913" font-size="6.35px" stroke-width=".26458">b</tspan></text>
+  <text x="78.270081" y="22.393513" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25" xml:space="preserve"><tspan x="78.270081" y="22.393513">r</tspan></text>
+ </g>
+ <path d="m78.058 0.264-77.795 49.615h112.72zm-0.0703 0.35938 34.49 48.99h-111.31z" color="#000000" stroke="#000" stroke-linejoin="round" stroke-width=".52917"/>
+</svg>
