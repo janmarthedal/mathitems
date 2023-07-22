@@ -1,7 +1,8 @@
-import { globIterateSync } from 'glob';
+import { load } from "./items/load";
 
-const globPattern = 'items/**/*.md';
+// const globPattern = 'items/**/*.md';
+const globPattern = 'items/{definition,theorems}/*.md';
 
-for (const filename of globIterateSync(globPattern, { nodir: true })) {
-    console.log(filename);
-}
+const items = load(globPattern);
+
+console.log(items);
