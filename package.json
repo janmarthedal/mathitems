@@ -1,0 +1,25 @@
+{
+  "name": "mathitems",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/janmarthedal/mathitems.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/janmarthedal/mathitems/issues"
+  },
+  "homepage": "https://github.com/janmarthedal/mathitems#readme",
+  "devDependencies": {
+    "@types/node": "^18.16.20",
+    "typescript": "^5.1.6"
+  }
+}
