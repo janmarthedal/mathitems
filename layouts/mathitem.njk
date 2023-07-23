@@ -1,0 +1,75 @@
+{% extends 'base.njk' %}
+
+{%- block extrahead %}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+{%- endblock %}
+
+{%- block contents %}
+<article>
+    <h2>{{ title }}</h2>
+
+    {# <aside class="references">
+        {%- set defines = id | itemDefines -%}
+        {%- set itemRefs = id | itemItemRefs -%}
+        {%- set conceptRefs = id | itemConceptRefs -%}
+        {% if defines | length %}
+        <div>
+            <p>Defines:</p>
+            <ul>
+            {%- for c in defines %}
+            <li><a href="{{ c.permalink|url }}">{{ c.title }}</a></li>
+            {%- endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% if itemRefs | length %}
+        <div>
+            <p>Item references:</p>
+            <ul>
+            {%- for c in itemRefs %}
+            <li><a href="{{ c.permalink|url }}">{{ c.id }}</a></li>
+            {%- endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% if conceptRefs | length %}
+        <div>
+            <p>Concept references:</p>
+            <ul>
+            {%- for c in conceptRefs %}
+            <li><a href="{{ c.permalink|url }}">{{ c.title }}</a></li>
+            {%- endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% if keywords | length %}
+        <div>
+            <p>Keywords:</p>
+            <ul>
+            {%- for kw in keywords %}
+            <li>{{ kw }}</li>
+            {%- endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </aside> #}
+
+    <div class="item">
+    {{ contents | safe }}
+    </div>
+
+    {# <aside class="validations">
+        {%- set validations = id | itemValidations -%}
+        <p>Created at {{ created | formatDate }}</p>
+        {% if validations | length %}
+        <p>Validations:</p>
+        <ul>
+        {%- for v in validations %}
+        <li>{{ v.source.data.author }}, {{ v.source.data.title }}, {{ v.location }}</li>
+        {%- endfor %}
+        </ul>
+        {% endif %}
+    </aside> #}
+</article>
+
+{%- endblock %}
