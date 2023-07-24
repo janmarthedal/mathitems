@@ -2,13 +2,6 @@ import { scanItemMarkup } from "./scan";
 
 export abstract class Node {
     constructor(
-        public readonly id: string
-    ) { }
-    abstract visit<R>(visitor: NodeVisitor<R>): R;
-}
-
-export abstract class CreatorNode {
-    constructor(
         public readonly id: string,
         public readonly creator: string,
         public readonly created: Date
@@ -16,18 +9,29 @@ export abstract class CreatorNode {
     abstract visit<R>(visitor: NodeVisitor<R>): R;
 }
 
-export abstract class ItemNode extends CreatorNode {
+export abstract class NamedNode extends Node {
+    constructor(
+        id: string,
+        creator: string,
+        created: Date,
+        public readonly name: string
+    ) {
+        super(id, creator, created);
+    }
+}
+
+export abstract class ItemNode extends NamedNode {
     public readonly mediaUses: Set<string>;
     public readonly conceptDefines: Set<string>;
     public readonly conceptRefs: Set<string>;
     public readonly itemRefs: Set<string>;
     constructor(
-        id: string,
+        name: string,
         creator: string,
         created: Date,
         public readonly markup: string
     ) {
-        super(id, creator, created);
+        super(name, creator, created, name);
         const { mediaUses, conceptDefines, conceptRefs, itemRefs } = scanItemMarkup(markup);
         this.mediaUses = mediaUses;
         this.conceptDefines = conceptDefines;
@@ -63,7 +67,7 @@ export class Proof extends ItemNode {
     }
 }
 
-export class Media extends CreatorNode {
+export class Media extends Node {
     constructor(
         id: string,
         creator: string,
@@ -79,7 +83,7 @@ export class Media extends CreatorNode {
     }
 }
 
-export class Source extends CreatorNode {
+export class Source extends Node {
     constructor(
         id: string,
         creator: string,
@@ -94,7 +98,7 @@ export class Source extends CreatorNode {
     }
 }
 
-export class Validation extends CreatorNode {
+export class Validation extends Node {
     constructor(
         id: string,
         creator: string,
@@ -110,11 +114,11 @@ export class Validation extends CreatorNode {
     }
 }
 
-export class Concept extends Node {
+export class Concept extends NamedNode {
     constructor(
         public readonly name: string
     ) {
-        super(Concept.nameToId(name));
+        super(Concept.nameToId(name), 'system', new Date(), name);
     }
     static nameToId(name: string): string {
         return '#' + name;

@@ -4,37 +4,32 @@ import MarkdownIt from 'markdown-it';
 import mk from '@iktakahiro/markdown-it-katex';
 import nunjucks from 'nunjucks';
 import { render as renderLess } from 'less';
-import { Concept, ItemNode, Node } from '../items/nodes';
+import { Concept, ItemNode, NamedNode, Node } from '../items/nodes';
 
-function getPath(node: Node): string {
-    return node.visit({
-        visitDefinition: () => `/definition/${node.id}/index.html`,
-        visitTheorem: () => `/theorem/${node.id}/index.html`,
-        visitProof: () => `/proof/${node.id}/index.html`,
-        visitMedia: () => `/media/${node.id}/index.html`,
-        visitSource: () => `/source/${node.id}/index.html`,
-        visitValidation: () => `/validation/${node.id}/index.html`,
-        visitConcept: con => `/concept/${con.name}/index.html`,
+function getPath(node: NamedNode): string {
+    const pathname = node.visit({
+        visitDefinition: () => 'definition',
+        visitTheorem: () => 'theorem',
+        visitProof: () => 'proof',
+        visitMedia: () => 'media',
+        visitSource: () => 'source',
+        visitValidation: () => 'validation',
+        visitConcept: () => 'concept',
     });
+    return `/${pathname}/${node.name}/index.html`;
 }
 
-function getTitle(node: Node): string {
-    return node.visit({
-        visitDefinition: () => `Definition ${node.id}`,
-        visitTheorem: () => `Theorem ${node.id}`,
-        visitProof: () => `Proof ${node.id}`,
-        visitMedia: () => `Media ${node.id}`,
-        visitSource: () => `Source ${node.id}`,
-        visitValidation: () => `Validation ${node.id}`,
-        visitConcept: con => `Concept ${con.name}`,
+function getTitle(node: NamedNode): string {
+    const title = node.visit({
+        visitDefinition: () => 'Definition',
+        visitTheorem: () => 'Theorem',
+        visitProof: () => 'Proof',
+        visitMedia: () => 'Media',
+        visitSource: () => 'Source',
+        visitValidation: () => 'Validation',
+        visitConcept: () => 'Concept',
     });
-}
-
-function getName(node: Node): string {
-    return node.visit({
-        visitConcept: con => con.name,
-        visitDefault: () => node.id,
-    });
+    return `${title} ${node.name}`;
 }
 
 function writeFile(filename: string, contents: string) {
@@ -60,12 +55,13 @@ interface DecoratedNode {
 function makeRenderData(outputDir: string, nodes: Array<Node>): Map<string, DecoratedNode> {
     const renderData = new Map<string, DecoratedNode>();
     for (const node of nodes) {
-        const path = getPath(node);
-        const filename = outputDir + path;
-        const permalink = '' + (path.endsWith('index.html') ? path.slice(0, -10) : path);
-        const title = getTitle(node);
-        const name = getName(node);
-        renderData.set(node.id, { name, title, filename, permalink });
+        if (node instanceof NamedNode) {
+            const path = getPath(node);
+            const filename = outputDir + path;
+            const permalink = '' + (path.endsWith('index.html') ? path.slice(0, -10) : path);
+            const title = getTitle(node);
+            renderData.set(node.id, { name: node.name, title, filename, permalink });
+        }
     }
     return renderData;
 }
