@@ -4,21 +4,18 @@ import MarkdownIt from 'markdown-it';
 import mk from '@iktakahiro/markdown-it-katex';
 import nunjucks from 'nunjucks';
 import { render as renderLess } from 'less';
-import { ItemData, ItemMeta, ItemType } from '../items/types';
+import { Definition, Node, NodeData, Theorem } from '../items/nodes';
 
-function makeFilename(basedir: string, meta: ItemMeta): string {
+function makeFilename(basedir: string, node: Node): string {
     let itempath = '';
-    switch (meta.type) {
-        case ItemType.Definition:
-            itempath = 'definition';
-            break;
-        case ItemType.Theorem:
-            itempath = 'theorem';
-            break;
-        default:
-            throw new Error(`Illegal type: ${meta.type}`);
+    if (node instanceof Definition) {
+        itempath = 'definition';
+    } else if (node instanceof Theorem) {
+        itempath = 'theorem';
+    } else {
+        throw new Error(`Illegal node: ${node.constructor.name}`);
     }
-    return `${basedir}/${itempath}/${meta.id}/index.html`;
+    return `${basedir}/${itempath}/${node.id}/index.html`;
 }
 
 function writeFile(filename: string, contents: string) {
@@ -34,7 +31,7 @@ async function generateStyles(outputDir: string) {
     writeFile(`${outputDir}/styles.css`, css.css);
 }
 
-export async function generateSite(outputDir: string, layoutDir: string, globals: Record<string, any>, items: Array<ItemData>) {
+export async function generateSite(outputDir: string, layoutDir: string, globals: Record<string, any>, items: Array<NodeData>) {
     const md = new MarkdownIt();
     md.use(mk);
 
@@ -42,12 +39,11 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
     env.addFilter('url', (obj: any) => '' + obj);
 
     for (const item of items) {
-        if (item.meta.id !== 'D1') continue;
-        const filename = makeFilename(outputDir, item.meta);
+        const filename = makeFilename(outputDir, item.node);
         const itemHtml = md.render(item.content);
         const pageHtml = env.render('mathitem.njk', {
             ...globals,
-            title: item.meta.id,
+            title: item.node.id,
             contents: itemHtml
         });
         writeFile(filename, pageHtml);

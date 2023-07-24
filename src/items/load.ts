@@ -1,34 +1,27 @@
 import { globIterateSync } from 'glob';
 import { read as matterRead } from 'gray-matter';
-import { ItemData, ItemMeta, ItemType } from './types';
+import { Definition, Node, NodeData, Theorem } from './nodes';
 import assert from 'assert';
 
-function validateMetaData(data: Record<string, any>): ItemMeta {
+function validateMetaData(data: Record<string, any>): Node {
     assert(typeof data.id === 'string', 'id must be a string');
     assert(typeof data.creator === 'string', 'creator must be a string');
-    const created = new Date(data.created);
-    if (isNaN(created.getTime())) {
-        throw new Error('created must be a valid date');
-    }
-    const base = {
-        id: data.id,
-        creator: data.creator,
-        created: new Date(data.created),
-    };
+    assert(data.created instanceof Date, 'created must be a Date');
+    assert(Number.isFinite(data.created.getTime()), 'created must be a valid Date');
     switch (data.type) {
         case 'definition':
-            return { type: ItemType.Definition, ...base };
+            return new Definition(data.id, data.creator, data.created);
         case 'theorem':
-            return { type: ItemType.Theorem, ...base };
+            return new Theorem(data.id, data.creator, data.created);
         default:
             throw new Error(`Illegal type: ${data.type}`);
     }
 }
 
-function validateIds(items: Array<ItemData>): void {
+function validateIds(items: Array<NodeData>): void {
     const ids = new Set<string>();
     for (const item of items) {
-        const id = item.meta.id;
+        const id = item.node.id;
         if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(id)) {
             throw new Error(`Illegal id: ${id}`);
         }
@@ -39,12 +32,12 @@ function validateIds(items: Array<ItemData>): void {
     }
 }
 
-export function load(globPattern: string): Array<ItemData> {
-    const items: Array<ItemData> = [];
+export function load(globPattern: string): Array<NodeData> {
+    const items: Array<NodeData> = [];
     for (const filename of globIterateSync(globPattern, { nodir: true })) {
         const { data, content } = matterRead(filename);
-        const meta = validateMetaData(data);
-        items.push({ meta, content });
+        const node = validateMetaData(data);
+        items.push({ node, content });
     }
     validateIds(items);
     return items;
