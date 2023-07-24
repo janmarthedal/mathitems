@@ -1,21 +1,32 @@
-import { mkdirSync, read, readFileSync, writeFileSync } from 'fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname } from 'path';
 import MarkdownIt from 'markdown-it';
 import mk from '@iktakahiro/markdown-it-katex';
 import nunjucks from 'nunjucks';
 import { render as renderLess } from 'less';
-import { Definition, ItemNode, Node, Theorem } from '../items/nodes';
+import { ItemNode, Node } from '../items/nodes';
 
-function makeFilename(basedir: string, node: Node): string {
-    let itempath = '';
-    if (node instanceof Definition) {
-        itempath = 'definition';
-    } else if (node instanceof Theorem) {
-        itempath = 'theorem';
-    } else {
-        throw new Error(`Illegal node: ${node.constructor.name}`);
-    }
-    return `${basedir}/${itempath}/${node.id}/index.html`;
+function getPath(node: Node): string {
+    const nodepart = node.visit({
+        visitDefinition: () => 'definition',
+        visitTheorem: () => 'theorem',
+        visitProof: () => 'proof',
+        visitMedia: () => 'media',
+        visitSource: () => 'source',
+        visitValidation: () => 'validation',
+    });
+    return `/${nodepart}/${node.id}/index.html`;
+}
+
+function getTitle(node: Node): string {
+    return node.visit({
+        visitDefinition: () => 'Definition',
+        visitTheorem: () => 'Theorem',
+        visitProof: () => 'Proof',
+        visitMedia: () => 'Media',
+        visitSource: () => 'Source',
+        visitValidation: () => 'Validation',
+    }) + ' ' + node.id;
 }
 
 function writeFile(filename: string, contents: string) {
@@ -31,7 +42,27 @@ async function generateStyles(outputDir: string) {
     writeFile(`${outputDir}/styles.css`, css.css);
 }
 
+interface DecoratedNode {
+    title: string;
+    filename: string;
+    permalink: string;
+}
+
+function makeRenderData(outputDir: string, nodes: Array<Node>): Map<string, DecoratedNode> {
+    const renderData = new Map<string, DecoratedNode>();
+    for (const node of nodes) {
+        const path = getPath(node);
+        const filename = outputDir + path;
+        const permalink = '' + (path.endsWith('index.html') ? path.slice(0, -10) : path);
+        const title = getTitle(node);
+        renderData.set(node.id, { title, filename, permalink });
+    }
+    return renderData;
+}
+
 export async function generateSite(outputDir: string, layoutDir: string, globals: Record<string, any>, nodes: Array<Node>) {
+    const renderDataMap = makeRenderData(outputDir, nodes);
+
     const md = new MarkdownIt();
     md.use(mk);
 
@@ -40,14 +71,14 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
 
     for (const node of nodes) {
         if (node instanceof ItemNode) {
-            const filename = makeFilename(outputDir, node);
+            const renderData = renderDataMap.get(node.id)!;
             const itemHtml = md.render(node.markup);
             const pageHtml = env.render('mathitem.njk', {
                 ...globals,
-                title: node.id,
+                title: renderData.title,
                 contents: itemHtml
             });
-            writeFile(filename, pageHtml);
+            writeFile(renderData.filename, pageHtml);
         }
     }
 

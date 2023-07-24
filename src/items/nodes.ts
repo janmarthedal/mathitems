@@ -1,12 +1,13 @@
-export class Node {
+export abstract class Node {
     constructor(
         public readonly id: string,
         public readonly creator: string,
         public readonly created: Date
     ) { }
+    abstract visit<R>(visitor: NodeVisitor<R>): R;
 }
 
-export class ItemNode extends Node {
+export abstract class ItemNode extends Node {
     constructor(
         id: string,
         creator: string,
@@ -17,9 +18,17 @@ export class ItemNode extends Node {
     }
 }
 
-export class Definition extends ItemNode { }
+export class Definition extends ItemNode {
+    visit<R>(visitor: NodeVisitor<R>): R {
+        return visitor.visitDefinition(this);
+    }
+}
 
-export class Theorem extends ItemNode { }
+export class Theorem extends ItemNode {
+    visit<R>(visitor: NodeVisitor<R>): R {
+        return visitor.visitTheorem(this);
+    }
+}
 
 export class Proof extends ItemNode {
     constructor(
@@ -30,6 +39,9 @@ export class Proof extends ItemNode {
         public readonly markup: string
     ) {
         super(id, creator, created, markup);
+    }
+    visit<R>(visitor: NodeVisitor<R>): R {
+        return visitor.visitProof(this);
     }
 }
 
@@ -44,6 +56,9 @@ export class Media extends Node {
     ) {
         super(id, creator, created);
     }
+    visit<R>(visitor: NodeVisitor<R>): R {
+        return visitor.visitMedia(this);
+    }
 }
 
 export class Source extends Node {
@@ -55,6 +70,9 @@ export class Source extends Node {
         public readonly title: string
     ) {
         super(id, creator, created);
+    }
+    visit<R>(visitor: NodeVisitor<R>): R {
+        return visitor.visitSource(this);
     }
 }
 
@@ -69,4 +87,16 @@ export class Validation extends Node {
     ) {
         super(id, creator, created);
     }
+    visit<R>(visitor: NodeVisitor<R>): R {
+        return visitor.visitValidation(this);
+    }
+}
+
+export interface NodeVisitor<R> {
+    visitDefinition(node: Definition): R;
+    visitTheorem(node: Theorem): R;
+    visitProof(node: Proof): R;
+    visitMedia(node: Media): R;
+    visitSource(node: Source): R;
+    visitValidation(node: Validation): R;
 }
