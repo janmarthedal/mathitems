@@ -4,29 +4,37 @@ import MarkdownIt from 'markdown-it';
 import mk from '@iktakahiro/markdown-it-katex';
 import nunjucks from 'nunjucks';
 import { render as renderLess } from 'less';
-import { ItemNode, Node } from '../items/nodes';
+import { Concept, ItemNode, Node } from '../items/nodes';
 
 function getPath(node: Node): string {
-    const nodepart = node.visit({
-        visitDefinition: () => 'definition',
-        visitTheorem: () => 'theorem',
-        visitProof: () => 'proof',
-        visitMedia: () => 'media',
-        visitSource: () => 'source',
-        visitValidation: () => 'validation',
+    return node.visit({
+        visitDefinition: () => `/definition/${node.id}/index.html`,
+        visitTheorem: () => `/theorem/${node.id}/index.html`,
+        visitProof: () => `/proof/${node.id}/index.html`,
+        visitMedia: () => `/media/${node.id}/index.html`,
+        visitSource: () => `/source/${node.id}/index.html`,
+        visitValidation: () => `/validation/${node.id}/index.html`,
+        visitConcept: con => `/concept/${con.name}/index.html`,
     });
-    return `/${nodepart}/${node.id}/index.html`;
 }
 
 function getTitle(node: Node): string {
     return node.visit({
-        visitDefinition: () => 'Definition',
-        visitTheorem: () => 'Theorem',
-        visitProof: () => 'Proof',
-        visitMedia: () => 'Media',
-        visitSource: () => 'Source',
-        visitValidation: () => 'Validation',
-    }) + ' ' + node.id;
+        visitDefinition: () => `Definition ${node.id}`,
+        visitTheorem: () => `Theorem ${node.id}`,
+        visitProof: () => `Proof ${node.id}`,
+        visitMedia: () => `Media ${node.id}`,
+        visitSource: () => `Source ${node.id}`,
+        visitValidation: () => `Validation ${node.id}`,
+        visitConcept: con => `Concept ${con.name}`,
+    });
+}
+
+function getName(node: Node): string {
+    return node.visit({
+        visitConcept: con => con.name,
+        visitDefault: () => node.id,
+    });
 }
 
 function writeFile(filename: string, contents: string) {
@@ -43,7 +51,8 @@ async function generateStyles(outputDir: string) {
 }
 
 interface DecoratedNode {
-    title: string;
+    name: string;   // Entity name
+    title: string;  // Page title
     filename: string;
     permalink: string;
 }
@@ -55,7 +64,8 @@ function makeRenderData(outputDir: string, nodes: Array<Node>): Map<string, Deco
         const filename = outputDir + path;
         const permalink = '' + (path.endsWith('index.html') ? path.slice(0, -10) : path);
         const title = getTitle(node);
-        renderData.set(node.id, { title, filename, permalink });
+        const name = getName(node);
+        renderData.set(node.id, { name, title, filename, permalink });
     }
     return renderData;
 }
@@ -76,7 +86,10 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
             const pageHtml = env.render('mathitem.njk', {
                 ...globals,
                 title: renderData.title,
-                contents: itemHtml
+                contents: itemHtml,
+                defines: [...node.conceptDefines].map(name => renderDataMap.get(Concept.nameToId(name))!),
+                itemRefs: [...node.itemRefs].map(id => renderDataMap.get(id)!),
+                conceptRefs: [...node.conceptRefs].map(name => renderDataMap.get(Concept.nameToId(name))!),
             });
             writeFile(renderData.filename, pageHtml);
         }
