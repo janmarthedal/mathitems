@@ -6,18 +6,30 @@ export class Node {
     ) { }
 }
 
-export class Definition extends Node { }
-
-export class Theorem extends Node { }
-
-export class Proof extends Node {
+export class ItemNode extends Node {
     constructor(
         id: string,
         creator: string,
         created: Date,
-        public readonly parent: string
+        public readonly markup: string
     ) {
         super(id, creator, created);
+    }
+}
+
+export class Definition extends ItemNode { }
+
+export class Theorem extends ItemNode { }
+
+export class Proof extends ItemNode {
+    constructor(
+        id: string,
+        creator: string,
+        created: Date,
+        public readonly parent: string,
+        public readonly markup: string
+    ) {
+        super(id, creator, created, markup);
     }
 }
 
@@ -57,9 +69,4 @@ export class Validation extends Node {
     ) {
         super(id, creator, created);
     }
-}
-
-export interface NodeData {
-    node: Node;
-    content: string;
 }

@@ -1,11 +1,13 @@
-import { load } from "./items/load";
+import { load, validateIds } from "./items/load";
 import { generateSite } from "./web/generate-site";
 
 // const globPattern = 'items/**/*.md';
 const globPattern = 'items/{definitions,theorems}/*.md';
 
-const items = load(globPattern);
+const nodes = load(globPattern);
+
+validateIds(nodes);
 
 (async () => {
-    await generateSite('dist', 'layouts', { sitename: 'MathItems' }, items);
+    await generateSite('dist', 'layouts', { sitename: 'MathItems' }, nodes);
 })();
