@@ -29,6 +29,7 @@ export abstract class ItemNode extends NamedNode {
         name: string,
         creator: string,
         created: Date,
+        public readonly keywords: Array<string>,
         public readonly markup: string
     ) {
         super(name, creator, created, name);
@@ -57,10 +58,11 @@ export class Proof extends ItemNode {
         id: string,
         creator: string,
         created: Date,
+        keywords: Array<string>,
         public readonly parent: string,
         public readonly markup: string
     ) {
-        super(id, creator, created, markup);
+        super(id, creator, created, keywords, markup);
     }
     visit<R>(visitor: NodeVisitor<R>): R {
         return visitor.visitProof ? visitor.visitProof(this) : visitor.visitDefault!(this);

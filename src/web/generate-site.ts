@@ -84,10 +84,11 @@ function renderItemNode(
     const pageHtml = env.render(template, {
         ...globals,
         name: renderData.name,
-        contents: itemHtml,
+        keywords: node.keywords,
         defines: [...node.conceptDefines].map(name => renderDataMap.get(Concept.nameToId(name))!),
         itemRefs: [...node.itemRefs].map(id => renderDataMap.get(id)!),
         conceptRefs: [...node.conceptRefs].map(name => renderDataMap.get(Concept.nameToId(name))!),
+        contents: itemHtml,
     });
     writeFile(outputDir, renderData.filename, pageHtml);
 }

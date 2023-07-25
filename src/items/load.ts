@@ -1,7 +1,7 @@
+import assert from 'assert';
 import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { globIterateSync } from 'glob';
-import assert from 'assert';
 import { read as matterRead } from 'gray-matter';
 import { Definition, Media, Node, Theorem } from './nodes';
 
@@ -12,9 +12,9 @@ function createNode(data: Record<string, any>, content: string): Node {
     assert(Number.isFinite(data.created.getTime()), 'created must be a valid Date');
     switch (data.type) {
         case 'definition':
-            return new Definition(data.id, data.creator, data.created, content);
+            return new Definition(data.id, data.creator, data.created, data.keywords || [], content);
         case 'theorem':
-            return new Theorem(data.id, data.creator, data.created, content);
+            return new Theorem(data.id, data.creator, data.created, data.keywords || [], content);
         case 'media': {
             assert(typeof data.subtype === 'string', 'subtype must be a string');
             assert(!data.description || typeof data.description === 'string', 'description must be a string');
