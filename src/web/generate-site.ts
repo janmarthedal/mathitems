@@ -93,8 +93,49 @@ function renderItemNode(
     writeFile(outputDir, renderData.filename, pageHtml);
 }
 
-function generatePages(outputDir: string, globals: Record<string, any>, env: nunjucks.Environment) {
+function generateItemListPage(
+    outputDir: string,
+    filename: string,
+    globals: Record<string, any>,
+    env: nunjucks.Environment,
+    renderDataMap: Map<string, DecoratedNode>,
+    title: string,
+    nodes: Array<ItemNode>
+) {
+    writeFile(outputDir, filename, env.render('item-list.njk', {
+        ...globals,
+        title,
+        items: nodes.map(node => ({
+            name: node.name,
+            created: node.created,
+            permalink: renderDataMap.get(node.id)!.permalink,
+            defines: [...node.conceptDefines],
+            keywords: node.keywords,
+        }))
+    }));
+}
+
+function generatePages(
+    outputDir: string,
+    globals: Record<string, any>,
+    env: nunjucks.Environment,
+    renderDataMap: Map<string, DecoratedNode>,
+    nodes: Array<Node>
+) {
     writeFile(outputDir, '/index.html', env.render('root.njk', globals));
+    const definitions: Array<ItemNode> = [];
+    const theorems: Array<ItemNode> = [];
+    for (const node of nodes) {
+        node.visit({
+            visitDefinition: node => definitions.push(node),
+            visitTheorem: node => theorems.push(node),
+            visitDefault: () => { },
+        });
+    }
+    definitions.sort((a, b) => b.created.getTime() - a.created.getTime());
+    theorems.sort((a, b) => b.created.getTime() - a.created.getTime());
+    generateItemListPage(outputDir, '/definition/index.html', globals, env, renderDataMap, 'Definitions', definitions);
+    generateItemListPage(outputDir, '/theorem/index.html', globals, env, renderDataMap, 'Theorems', theorems);
 }
 
 export async function generateSite(outputDir: string, layoutDir: string, globals: Record<string, any>, nodes: Array<Node>) {
@@ -105,6 +146,7 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
 
     const env = new nunjucks.Environment(new nunjucks.FileSystemLoader(layoutDir), { autoescape: true });
     env.addFilter('url', (obj: any) => '' + obj);
+    env.addFilter('formatDate', (date: Date) => date.toISOString().substring(0, 16).replace('T', ' '));
 
     for (const node of nodes) {
         node.visit({
@@ -127,5 +169,5 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
     }
 
     await generateStyles(outputDir);
-    generatePages(outputDir, globals, env);
+    generatePages(outputDir, globals, env, renderDataMap, nodes);
 }
