@@ -4,34 +4,8 @@ import MarkdownIt from 'markdown-it';
 import mk from '@iktakahiro/markdown-it-katex';
 import nunjucks from 'nunjucks';
 import { render as renderLess } from 'less';
-import { Concept, ItemNode, Media, NamedNode, Node } from '../items/nodes';
+import { Concept, ItemNode, Node } from '../items/nodes';
 import { LINK_REGEX } from '../items/scan';
-
-function getPath(node: NamedNode): string {
-    const pathname = node.visit({
-        visitDefinition: () => 'definition',
-        visitTheorem: () => 'theorem',
-        visitProof: () => 'proof',
-        visitMedia: () => 'media',
-        visitSource: () => 'source',
-        visitValidation: () => 'validation',
-        visitConcept: () => 'concept',
-    });
-    return `/${pathname}/${node.name}/index.html`;
-}
-
-function getTitle(node: NamedNode): string {
-    const title = node.visit({
-        visitDefinition: () => 'Definition',
-        visitTheorem: () => 'Theorem',
-        visitProof: () => 'Proof',
-        visitMedia: () => 'Media',
-        visitSource: () => 'Source',
-        visitValidation: () => 'Validation',
-        visitConcept: () => 'Concept',
-    });
-    return `${title} ${node.name}`;
-}
 
 function writeFile(outputDir: string, filename: string, contents: string | Buffer) {
     const path = `${outputDir}/${filename}`;
@@ -48,30 +22,30 @@ async function generateStyles(outputDir: string) {
 
 interface DecoratedNode {
     readonly name: string;            // Entity name
-    readonly title: string;           // Page title (TODO remove, use template instead)
     readonly filename: string;
     readonly permalink: string;
     readonly blobpath?: string;       // Media blob path
 }
 
+function decorateNamedNode(pathitem: string, name: string): DecoratedNode {
+    const filename = `/${pathitem}/${name}/index.html`;
+    const permalink = '' + (filename.endsWith('index.html') ? filename.slice(0, -10) : filename);
+    return { name, filename, permalink };
+}
+
 function makeRenderData(nodes: Array<Node>): Map<string, DecoratedNode> {
     const renderData = new Map<string, DecoratedNode>();
     for (const node of nodes) {
-        // TODO visitor instead of `instanceof`
-        if (node instanceof NamedNode) {
-            const filename = getPath(node);
-            const permalink = '' + (filename.endsWith('index.html') ? filename.slice(0, -10) : filename);
-            const title = getTitle(node);
-            const decoratedNode: DecoratedNode = { name: node.name, title, filename, permalink };
-            if (node instanceof Media) {
-                renderData.set(node.id, {
-                    ...decoratedNode,
-                    blobpath: `/blobs/${node.name}.${node.subtype}`
-                });
-            } else {
-                renderData.set(node.id, decoratedNode);
-            }
-        }
+        const decoratedNode = node.visit<DecoratedNode>({
+            visitDefinition: node => decorateNamedNode('definition', node.name),
+            visitTheorem: node => decorateNamedNode('theorem', node.name),
+            visitMedia: node => ({
+                ...decorateNamedNode('media', node.name),
+                blobpath: `/blobs/${node.name}.${node.subtype}`
+            }),
+            visitConcept: node => decorateNamedNode('concept', node.name),
+        });
+        renderData.set(node.id, decoratedNode);
     }
     return renderData;
 }
@@ -95,6 +69,29 @@ function prepareMarkup(contents: string, renderDataMap: Map<string, DecoratedNod
     });
 }
 
+function renderItemNode(
+    outputDir: string,
+    globals: Record<string, unknown>,
+    md: MarkdownIt,
+    env: nunjucks.Environment,
+    renderDataMap: Map<string, DecoratedNode>,
+    template: string,
+    node: ItemNode
+) {
+    const renderData = renderDataMap.get(node.id)!;
+    const preparedMarkup = prepareMarkup(node.markup, renderDataMap);
+    const itemHtml = md.render(preparedMarkup);
+    const pageHtml = env.render(template, {
+        ...globals,
+        name: renderData.name,
+        contents: itemHtml,
+        defines: [...node.conceptDefines].map(name => renderDataMap.get(Concept.nameToId(name))!),
+        itemRefs: [...node.itemRefs].map(id => renderDataMap.get(id)!),
+        conceptRefs: [...node.conceptRefs].map(name => renderDataMap.get(Concept.nameToId(name))!),
+    });
+    writeFile(outputDir, renderData.filename, pageHtml);
+}
+
 export async function generateSite(outputDir: string, layoutDir: string, globals: Record<string, any>, nodes: Array<Node>) {
     const renderDataMap = makeRenderData(nodes);
 
@@ -105,24 +102,23 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
     env.addFilter('url', (obj: any) => '' + obj);
 
     for (const node of nodes) {
-        if (node instanceof ItemNode) {
-            const renderData = renderDataMap.get(node.id)!;
-            const preparedMarkup = prepareMarkup(node.markup, renderDataMap);
-            const itemHtml = md.render(preparedMarkup);
-            const pageHtml = env.render('mathitem.njk', {
-                ...globals,
-                title: renderData.title,
-                contents: itemHtml,
-                defines: [...node.conceptDefines].map(name => renderDataMap.get(Concept.nameToId(name))!),
-                itemRefs: [...node.itemRefs].map(id => renderDataMap.get(id)!),
-                conceptRefs: [...node.conceptRefs].map(name => renderDataMap.get(Concept.nameToId(name))!),
-            });
-            writeFile(outputDir, renderData.filename, pageHtml);
-        } else if (node instanceof Media) {
-            // TODO write media page
-            const renderData = renderDataMap.get(node.id)!;
-            writeFile(outputDir, renderData.blobpath!, node.buffer);
-        }
+        node.visit({
+            visitDefinition: node => renderItemNode(outputDir, globals, md, env, renderDataMap, 'definition.njk', node),
+            visitTheorem: node => renderItemNode(outputDir, globals, md, env, renderDataMap, 'theorem.njk', node),
+            visitProof: node => renderItemNode(outputDir, globals, md, env, renderDataMap, 'proof.njk', node),
+            visitMedia: node => {
+                // TODO write media page
+                const renderData = renderDataMap.get(node.id)!;
+                writeFile(outputDir, renderData.blobpath!, node.buffer);
+            },
+            visitSource: () => {
+                // TODO write source page
+            },
+            visitValidation: () => { },
+            visitConcept: () => {
+                // TODO write concept page
+            },
+        });
     }
 
     await generateStyles(outputDir);
