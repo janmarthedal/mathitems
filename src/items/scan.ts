@@ -1,3 +1,5 @@
+export const LINK_REGEX = /(!?)\[(.*?)\]\((.*?)\)/gm;
+
 function isLegalConcept(concept: string): boolean {
     return /^[a-zA-Z-]+$/.test(concept);
 }
@@ -12,7 +14,7 @@ export function scanItemMarkup(markup: string): {
     const conceptDefines = new Set<string>();
     const conceptRefs = new Set<string>();
     const itemRefs = new Set<string>();
-    for (const m of markup.matchAll(/(!?)\[(.*?)\]\((.*?)\)/gm)) {
+    for (const m of markup.matchAll(LINK_REGEX)) {
         const [match, bang, _text, link] = m;
         if (bang) {
             mediaUses.add(link);

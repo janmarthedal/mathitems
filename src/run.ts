@@ -13,6 +13,9 @@ const conceptNodes = createConceptNodes(nodes);
 
 const allNodes = [...nodes, ...conceptNodes];
 
+// check for references to non-existent nodes
+// check for reference cycles (which includes self-references)
+
 (async () => {
     await generateSite('dist', 'layouts', { sitename: 'MathItems' }, allNodes);
 })();

@@ -5,6 +5,7 @@ import mk from '@iktakahiro/markdown-it-katex';
 import nunjucks from 'nunjucks';
 import { render as renderLess } from 'less';
 import { Concept, ItemNode, NamedNode, Node } from '../items/nodes';
+import { LINK_REGEX } from '../items/scan';
 
 function getPath(node: NamedNode): string {
     const pathname = node.visit({
@@ -66,6 +67,25 @@ function makeRenderData(outputDir: string, nodes: Array<Node>): Map<string, Deco
     return renderData;
 }
 
+function prepareMarkup(contents: string, renderDataMap: Map<string, DecoratedNode>): string {
+    return contents.replace(LINK_REGEX, (_match, bang, text, link) => {
+        if (bang) {
+            // const mediaNode = renderDataMap.get(link)!;
+            return `![${text || link}](https://mathitems.janmr.com/media/M1.svg)`;   // TODO fix link
+        }
+        if (link.startsWith('=')) {
+            return `*${text}*`;
+        }
+        const [itemRef, conceptRef] = link.split('#');
+        if (conceptRef && !itemRef) {
+            const conceptNode = renderDataMap.get(Concept.nameToId(conceptRef))!;
+            return `[${text}](${conceptNode.permalink})`;
+        }
+        const refItemNode = renderDataMap.get(itemRef)!;
+        return conceptRef ? `[${text}](${refItemNode.permalink}#${conceptRef})` : `[${text}](${refItemNode.permalink})`;
+    });
+}
+
 export async function generateSite(outputDir: string, layoutDir: string, globals: Record<string, any>, nodes: Array<Node>) {
     const renderDataMap = makeRenderData(outputDir, nodes);
 
@@ -78,7 +98,8 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
     for (const node of nodes) {
         if (node instanceof ItemNode) {
             const renderData = renderDataMap.get(node.id)!;
-            const itemHtml = md.render(node.markup);
+            const preparedMarkup = prepareMarkup(node.markup, renderDataMap);
+            const itemHtml = md.render(preparedMarkup);
             const pageHtml = env.render('mathitem.njk', {
                 ...globals,
                 title: renderData.title,
