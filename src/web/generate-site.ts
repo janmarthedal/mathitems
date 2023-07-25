@@ -50,6 +50,26 @@ function makeRenderData(nodes: Array<Node>): Map<string, DecoratedNode> {
     return renderData;
 }
 
+// How to sort the lists?
+function conceptDefinedByMap(nodes: Array<Node>): Map<string, Array<string>> {
+    const map = new Map<string, Array<string>>();
+    for (const node of nodes) {
+        node.visit({
+            visitDefinition: node => {
+                for (const name of node.conceptDefines) {
+                    const list = map.get(name) || [];
+                    if (list.length === 0) {
+                        map.set(name, list);
+                    }
+                    list.push(node.name);
+                }
+            },
+            visitDefault: () => { },
+        });
+    }
+    return map;
+}
+
 function prepareMarkup(contents: string, renderDataMap: Map<string, DecoratedNode>): string {
     return contents.replace(LINK_REGEX, (_match, bang, text, link) => {
         if (bang) {
@@ -140,6 +160,7 @@ function generatePages(
 
 export async function generateSite(outputDir: string, layoutDir: string, globals: Record<string, any>, nodes: Array<Node>) {
     const renderDataMap = makeRenderData(nodes);
+    const conceptsDefinedBy = conceptDefinedByMap(nodes);
 
     const md = new MarkdownIt();
     md.use(mk);
@@ -162,8 +183,12 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
                 // TODO write source page
             },
             visitValidation: () => { },
-            visitConcept: () => {
-                // TODO write concept page
+            visitConcept: node => {
+                writeFile(outputDir, renderDataMap.get(node.id)!.filename, env.render('concept.njk', {
+                    ...globals,
+                    name: node.name,
+                    items: (conceptsDefinedBy.get(node.name) || []).map(id => renderDataMap.get(id)!),
+                }));
             },
         });
     }
