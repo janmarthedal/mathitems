@@ -92,6 +92,10 @@ function renderItemNode(
     writeFile(outputDir, renderData.filename, pageHtml);
 }
 
+function generatePages(outputDir: string, globals: Record<string, any>, env: nunjucks.Environment) {
+    writeFile(outputDir, '/index.html', env.render('root.njk', globals));
+}
+
 export async function generateSite(outputDir: string, layoutDir: string, globals: Record<string, any>, nodes: Array<Node>) {
     const renderDataMap = makeRenderData(nodes);
 
@@ -122,4 +126,5 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
     }
 
     await generateStyles(outputDir);
+    generatePages(outputDir, globals, env);
 }
