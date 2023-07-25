@@ -1,0 +1,12 @@
+{% extends 'base.njk' %}
+
+{%- block contents %}
+<main>
+    <h2>Concepts</h2>
+    <ul>
+    {%- for c in concepts %}
+    <li><a href="{{ c.permalink | url }}">{{ c.name }}</a> ({{ c.count }} definitions)</li>
+    {%- endfor %}
+    </ul>
+</main>
+{%- endblock %}

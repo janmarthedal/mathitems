@@ -135,29 +135,6 @@ function generateItemListPage(
     }));
 }
 
-function generatePages(
-    outputDir: string,
-    globals: Record<string, any>,
-    env: nunjucks.Environment,
-    renderDataMap: Map<string, DecoratedNode>,
-    nodes: Array<Node>
-) {
-    writeFile(outputDir, '/index.html', env.render('root.njk', globals));
-    const definitions: Array<ItemNode> = [];
-    const theorems: Array<ItemNode> = [];
-    for (const node of nodes) {
-        node.visit({
-            visitDefinition: node => definitions.push(node),
-            visitTheorem: node => theorems.push(node),
-            visitDefault: () => { },
-        });
-    }
-    definitions.sort((a, b) => b.created.getTime() - a.created.getTime());
-    theorems.sort((a, b) => b.created.getTime() - a.created.getTime());
-    generateItemListPage(outputDir, '/definition/index.html', globals, env, renderDataMap, 'Definitions', definitions);
-    generateItemListPage(outputDir, '/theorem/index.html', globals, env, renderDataMap, 'Theorems', theorems);
-}
-
 export async function generateSite(outputDir: string, layoutDir: string, globals: Record<string, any>, nodes: Array<Node>) {
     const renderDataMap = makeRenderData(nodes);
     const conceptsDefinedBy = conceptDefinedByMap(nodes);
@@ -194,5 +171,31 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
     }
 
     await generateStyles(outputDir);
-    generatePages(outputDir, globals, env, renderDataMap, nodes);
+
+    // Generate pages
+    writeFile(outputDir, '/index.html', env.render('root.njk', globals));
+    const definitions: Array<ItemNode> = [];
+    const theorems: Array<ItemNode> = [];
+    const concepts: Array<Concept> = [];
+    for (const node of nodes) {
+        node.visit({
+            visitDefinition: node => definitions.push(node),
+            visitTheorem: node => theorems.push(node),
+            visitConcept: node => concepts.push(node),
+            visitDefault: () => { },
+        });
+    }
+    definitions.sort((a, b) => b.created.getTime() - a.created.getTime());
+    theorems.sort((a, b) => b.created.getTime() - a.created.getTime());
+    concepts.sort((a, b) => a.name.localeCompare(b.name));
+    generateItemListPage(outputDir, '/definition/index.html', globals, env, renderDataMap, 'Definitions', definitions);
+    generateItemListPage(outputDir, '/theorem/index.html', globals, env, renderDataMap, 'Theorems', theorems);
+    writeFile(outputDir, '/concept/index.html', env.render('concept-list.njk', {
+        ...globals,
+        concepts: concepts.map(c => ({
+            name: c.name,
+            permalink: renderDataMap.get(c.id)!.permalink,
+            count: (conceptsDefinedBy.get(c.name) || []).length,
+        })),
+    }));
 }
