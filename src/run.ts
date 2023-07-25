@@ -3,7 +3,7 @@ import { load, validateIds } from "./items/load";
 import { generateSite } from "./web/generate-site";
 
 // const globPattern = 'items/**/*.md';
-const globPattern = 'items/{definitions,theorems}/*.md';
+const globPattern = 'items/{definitions,theorems,media}/*.md';
 
 const nodes = load(globPattern);
 

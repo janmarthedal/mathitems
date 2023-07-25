@@ -67,16 +67,16 @@ export class Proof extends ItemNode {
     }
 }
 
-export class Media extends Node {
+export class Media extends NamedNode {
     constructor(
         id: string,
         creator: string,
         created: Date,
         public readonly subtype: string,
-        public readonly path: string,
-        public readonly description: string
+        public readonly description: string,
+        public readonly buffer: Buffer
     ) {
-        super(id, creator, created);
+        super(id, creator, created, id);
     }
     visit<R>(visitor: NodeVisitor<R>): R {
         return visitor.visitMedia ? visitor.visitMedia(this) : visitor.visitDefault!(this);

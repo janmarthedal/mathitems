@@ -4,7 +4,7 @@ import MarkdownIt from 'markdown-it';
 import mk from '@iktakahiro/markdown-it-katex';
 import nunjucks from 'nunjucks';
 import { render as renderLess } from 'less';
-import { Concept, ItemNode, NamedNode, Node } from '../items/nodes';
+import { Concept, ItemNode, Media, NamedNode, Node } from '../items/nodes';
 import { LINK_REGEX } from '../items/scan';
 
 function getPath(node: NamedNode): string {
@@ -33,35 +33,44 @@ function getTitle(node: NamedNode): string {
     return `${title} ${node.name}`;
 }
 
-function writeFile(filename: string, contents: string) {
-    const path = dirname(filename);
-    mkdirSync(path, { recursive: true });
-    writeFileSync(filename, contents);
+function writeFile(outputDir: string, filename: string, contents: string | Buffer) {
+    const path = `${outputDir}/${filename}`;
+    mkdirSync(dirname(path), { recursive: true });
+    writeFileSync(path, contents);
 }
 
 // TODO: Use glob to find all `less` files to process
 async function generateStyles(outputDir: string) {
     const contents = readFileSync('static/styles.less', 'utf8');
     const css = await renderLess(contents);
-    writeFile(`${outputDir}/styles.css`, css.css);
+    writeFile(outputDir, 'styles.css', css.css);
 }
 
 interface DecoratedNode {
-    name: string;   // Entity name
-    title: string;  // Page title
-    filename: string;
-    permalink: string;
+    readonly name: string;            // Entity name
+    readonly title: string;           // Page title (TODO remove, use template instead)
+    readonly filename: string;
+    readonly permalink: string;
+    readonly blobpath?: string;       // Media blob path
 }
 
-function makeRenderData(outputDir: string, nodes: Array<Node>): Map<string, DecoratedNode> {
+function makeRenderData(nodes: Array<Node>): Map<string, DecoratedNode> {
     const renderData = new Map<string, DecoratedNode>();
     for (const node of nodes) {
+        // TODO visitor instead of `instanceof`
         if (node instanceof NamedNode) {
-            const path = getPath(node);
-            const filename = outputDir + path;
-            const permalink = '' + (path.endsWith('index.html') ? path.slice(0, -10) : path);
+            const filename = getPath(node);
+            const permalink = '' + (filename.endsWith('index.html') ? filename.slice(0, -10) : filename);
             const title = getTitle(node);
-            renderData.set(node.id, { name: node.name, title, filename, permalink });
+            const decoratedNode: DecoratedNode = { name: node.name, title, filename, permalink };
+            if (node instanceof Media) {
+                renderData.set(node.id, {
+                    ...decoratedNode,
+                    blobpath: `/blobs/${node.name}.${node.subtype}`
+                });
+            } else {
+                renderData.set(node.id, decoratedNode);
+            }
         }
     }
     return renderData;
@@ -70,8 +79,8 @@ function makeRenderData(outputDir: string, nodes: Array<Node>): Map<string, Deco
 function prepareMarkup(contents: string, renderDataMap: Map<string, DecoratedNode>): string {
     return contents.replace(LINK_REGEX, (_match, bang, text, link) => {
         if (bang) {
-            // const mediaNode = renderDataMap.get(link)!;
-            return `![${text || link}](https://mathitems.janmr.com/media/M1.svg)`;   // TODO fix link
+            const mediaNode = renderDataMap.get(link)!;
+            return `![${text || link}](${mediaNode.blobpath})`;
         }
         if (link.startsWith('=')) {
             return `*${text}*`;
@@ -87,7 +96,7 @@ function prepareMarkup(contents: string, renderDataMap: Map<string, DecoratedNod
 }
 
 export async function generateSite(outputDir: string, layoutDir: string, globals: Record<string, any>, nodes: Array<Node>) {
-    const renderDataMap = makeRenderData(outputDir, nodes);
+    const renderDataMap = makeRenderData(nodes);
 
     const md = new MarkdownIt();
     md.use(mk);
@@ -108,7 +117,11 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
                 itemRefs: [...node.itemRefs].map(id => renderDataMap.get(id)!),
                 conceptRefs: [...node.conceptRefs].map(name => renderDataMap.get(Concept.nameToId(name))!),
             });
-            writeFile(renderData.filename, pageHtml);
+            writeFile(outputDir, renderData.filename, pageHtml);
+        } else if (node instanceof Media) {
+            // TODO write media page
+            const renderData = renderDataMap.get(node.id)!;
+            writeFile(outputDir, renderData.blobpath!, node.buffer);
         }
     }
 
