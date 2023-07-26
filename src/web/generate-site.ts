@@ -106,18 +106,18 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
 
     for (const node of nodes) {
         node.visit({
-            visitDefinition: node => renderItemNode(outputDir, globals, md, env, renderDataMap, 'definition.njk', node),
-            visitTheorem: node => renderItemNode(outputDir, globals, md, env, renderDataMap, 'theorem.njk', node),
+            visitDefinition: node => renderItemNode(outputDir, globals, md, env, renderDataMap, 'item/definition.njk', node),
+            visitTheorem: node => renderItemNode(outputDir, globals, md, env, renderDataMap, 'item/theorem.njk', node),
             visitProof: node => renderItemNode(outputDir, {
                 ...globals,
                 parent: {
                     ...renderDataMap.get(node.parent)!,
                     name: node.parent
                 },
-            }, md, env, renderDataMap, 'proof.njk', node),
+            }, md, env, renderDataMap, 'item/proof.njk', node),
             visitMedia: node => {
                 const renderData = renderDataMap.get(node.id)!;
-                writeFile(outputDir, renderData.filename, env.render('media.njk', {
+                writeFile(outputDir, renderData.filename, env.render('item/media.njk', {
                     ...globals,
                     name: node.name,
                     description: node.description,
@@ -131,7 +131,7 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
             },
             visitValidation: () => { },
             visitConcept: node => {
-                writeFile(outputDir, renderDataMap.get(node.id)!.filename, env.render('concept.njk', {
+                writeFile(outputDir, renderDataMap.get(node.id)!.filename, env.render('item/concept.njk', {
                     ...globals,
                     name: node.name,
                     items: node.definedBy.map(id => renderDataMap.get(id)!),
@@ -168,7 +168,7 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
     writeFile(outputDir, '/index.html', env.render('root.njk', globals));
 
     // Definition list page
-    writeFile(outputDir, '/definition/index.html', env.render('definition-list.njk', {
+    writeFile(outputDir, '/definition/index.html', env.render('list/definitions.njk', {
         ...globals,
         items: definitions.map(node => ({
             name: node.name,
@@ -180,7 +180,7 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
     }));
 
     // Theorem list page
-    writeFile(outputDir, '/theorem/index.html', env.render('theorem-list.njk', {
+    writeFile(outputDir, '/theorem/index.html', env.render('list/theorems.njk', {
         ...globals,
         items: theorems.map(node => ({
             name: node.name,
@@ -192,7 +192,7 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
     }));
 
     // Proof list page
-    writeFile(outputDir, '/proof/index.html', env.render('proof-list.njk', {
+    writeFile(outputDir, '/proof/index.html', env.render('list/proofs.njk', {
         ...globals,
         items: proofs.map(node => ({
             name: node.name,
@@ -204,7 +204,7 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
     }));
 
     // Concept list page
-    writeFile(outputDir, '/concept/index.html', env.render('concept-list.njk', {
+    writeFile(outputDir, '/concept/index.html', env.render('list/concepts.njk', {
         ...globals,
         concepts: concepts.map(c => ({
             name: c.name,
@@ -214,7 +214,7 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
     }));
 
     // Media list page
-    writeFile(outputDir, '/media/index.html', env.render('media-list.njk', {
+    writeFile(outputDir, '/media/index.html', env.render('list/medias.njk', {
         ...globals,
         items: medias.map(n => ({
             name: n.name,
