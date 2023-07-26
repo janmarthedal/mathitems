@@ -4,7 +4,7 @@ import MarkdownIt from 'markdown-it';
 import mk from '@iktakahiro/markdown-it-katex';
 import nunjucks from 'nunjucks';
 import { render as renderLess } from 'less';
-import { Concept, Definition, ItemNode, Media, Node, Proof, Theorem } from '../items/nodes';
+import { Concept, Definition, ItemNode, Media, Node, Proof, Source, Theorem } from '../items/nodes';
 import { LINK_REGEX } from '../items/scan';
 
 function writeFile(outputDir: string, filename: string, contents: string | Buffer) {
@@ -152,6 +152,7 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
     const proofs: Array<Proof> = [];
     const concepts: Array<Concept> = [];
     const medias: Array<Media> = [];
+    const sources: Array<Source> = [];
     for (const node of nodes) {
         node.visit({
             visitDefinition: node => definitions.push(node),
@@ -159,6 +160,7 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
             visitProof: node => proofs.push(node),
             visitConcept: node => concepts.push(node),
             visitMedia: node => medias.push(node),
+            visitSource: node => sources.push(node),
             visitAny: () => { },
         });
     }
@@ -166,6 +168,7 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
     theorems.sort((a, b) => b.created.getTime() - a.created.getTime());
     proofs.sort((a, b) => b.created.getTime() - a.created.getTime());
     medias.sort((a, b) => b.created.getTime() - a.created.getTime());
+    sources.sort((a, b) => b.created.getTime() - a.created.getTime());
     concepts.sort((a, b) => a.name.localeCompare(b.name));
 
     // Style sheet
@@ -227,6 +230,16 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
             name: n.name,
             permalink: renderDataMap.get(n.id)!.permalink,
             description: n.description,
+        })),
+    }));
+
+    // Source list page
+    writeFile(outputDir, '/source/index.html', env.render('list/sources.njk', {
+        ...globals,
+        items: sources.map(n => ({
+            name: n.name,
+            permalink: renderDataMap.get(n.id)!.permalink,
+            title: n.title,
         })),
     }));
 }
