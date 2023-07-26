@@ -4,7 +4,7 @@ import MarkdownIt from 'markdown-it';
 import mk from '@iktakahiro/markdown-it-katex';
 import nunjucks from 'nunjucks';
 import { render as renderLess } from 'less';
-import { Concept, Definition, ItemNode, Node, Proof, Theorem } from '../items/nodes';
+import { Concept, Definition, ItemNode, Media, Node, Proof, Theorem } from '../items/nodes';
 import { LINK_REGEX } from '../items/scan';
 
 function writeFile(outputDir: string, filename: string, contents: string | Buffer) {
@@ -144,18 +144,21 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
     const theorems: Array<Theorem> = [];
     const proofs: Array<Proof> = [];
     const concepts: Array<Concept> = [];
+    const medias: Array<Media> = [];
     for (const node of nodes) {
         node.visit({
             visitDefinition: node => definitions.push(node),
             visitTheorem: node => theorems.push(node),
             visitProof: node => proofs.push(node),
             visitConcept: node => concepts.push(node),
+            visitMedia: node => medias.push(node),
             visitAny: () => { },
         });
     }
     definitions.sort((a, b) => b.created.getTime() - a.created.getTime());
     theorems.sort((a, b) => b.created.getTime() - a.created.getTime());
     proofs.sort((a, b) => b.created.getTime() - a.created.getTime());
+    medias.sort((a, b) => b.created.getTime() - a.created.getTime());
     concepts.sort((a, b) => a.name.localeCompare(b.name));
 
     // Style sheet
@@ -207,6 +210,16 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
             name: c.name,
             permalink: renderDataMap.get(c.id)!.permalink,
             count: c.definedBy.length,
+        })),
+    }));
+
+    // Media list page
+    writeFile(outputDir, '/media/index.html', env.render('media-list.njk', {
+        ...globals,
+        items: medias.map(n => ({
+            name: n.name,
+            permalink: renderDataMap.get(n.id)!.permalink,
+            description: n.description,
         })),
     }));
 }
