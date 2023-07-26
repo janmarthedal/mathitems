@@ -45,6 +45,7 @@ function makeRenderData(nodes: Array<Node>): Map<string, DecoratedNode> {
                 blobpath: `/blobs/${node.name}.${node.subtype}`
             }),
             visitConcept: node => decorateNamedNode('concept', node.name),
+            visitSource: node => decorateNamedNode('source', node.name),
         });
         renderData.set(node.id, decoratedNode);
     }
@@ -126,8 +127,14 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
                 // Write media blob
                 writeFile(outputDir, renderData.blobpath!, node.buffer);
             },
-            visitSource: () => {
-                // TODO write source page
+            visitSource: node => {
+                const renderData = renderDataMap.get(node.id)!;
+                writeFile(outputDir, renderData.filename, env.render('item/source.njk', {
+                    ...globals,
+                    name: node.name,
+                    title: node.title,
+                    extra: node.extra,
+                }));
             },
             visitValidation: () => { },
             visitConcept: node => {

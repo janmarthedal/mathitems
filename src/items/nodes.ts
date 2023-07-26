@@ -85,15 +85,16 @@ export class Media extends NamedNode {
     }
 }
 
-export class Source extends Node {
+export class Source extends NamedNode {
     constructor(
         id: string,
         creator: string,
         created: Date,
         public readonly subtype: string,
-        public readonly title: string
+        public readonly title: string,
+        public readonly extra: Record<string, unknown>
     ) {
-        super(id, creator, created);
+        super(id, creator, created, id);
     }
     visit<R>(visitor: NodeVisitor<R>): R {
         return visitor.visitSource ? visitor.visitSource(this) : visitor.visitAny!(this);

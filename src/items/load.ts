@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { globIterateSync } from 'glob';
 import { read as matterRead } from 'gray-matter';
-import { Definition, Media, Node, Proof, Theorem } from './nodes';
+import { Definition, Media, Node, Proof, Source, Theorem } from './nodes';
 
 function createNode(data: Record<string, any>, content: string): Node {
     assert(typeof data.id === 'string', 'id must be a string');
@@ -23,6 +23,11 @@ function createNode(data: Record<string, any>, content: string): Node {
             assert(!data.description || typeof data.description === 'string', 'description must be a string');
             return new Media(data.id, data.creator, data.created, data.subtype, data.description || '', Buffer.from(content));
         }
+        case 'source':
+            assert(typeof data.subtype === 'string', 'subtype must be a string');
+            assert(typeof data.title === 'string', 'title must be a string');
+            assert(typeof data.extra === 'object', 'extra must be an object');
+            return new Source(data.id, data.creator, data.created, data.subtype, data.title, data.extra);
         default:
             throw new Error(`Illegal type: ${data.type}`);
     }
@@ -47,10 +52,7 @@ export function load(globPattern: string): Array<Node> {
     for (const filename of globIterateSync(globPattern, { nodir: true })) {
         console.log('Loading', filename);
         let { data, content } = matterRead(filename);
-        if (data.type === 'source') {
-            // TODO
-            continue;
-        } else if (data.type === 'validations') {
+        if (data.type === 'validations') {
             // TODO
             continue;
         }
