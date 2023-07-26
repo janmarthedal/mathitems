@@ -17,5 +17,5 @@ const allNodes = [...nodes, ...conceptNodes];
 // check for reference cycles (which includes self-references)
 
 (async () => {
-    await generateSite('dist', 'layouts', { sitename: 'MathItems' }, allNodes);
+    await generateSite('_site', 'layouts', { sitename: 'MathItems' }, allNodes);
 })();

@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rimraf dist",
-    "serve": "cd dist && python3 -m http.server 8000",
+    "clean": "rimraf _site",
+    "serve": "cd _site && python3 -m http.server 8000",
+    "make": "node --enable-source-maps build/run.js",
     "build": "tsc"
   },
   "repository": {
