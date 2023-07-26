@@ -65,7 +65,7 @@ export class Proof extends ItemNode {
         super(id, creator, created, keywords, markup);
     }
     visit<R>(visitor: NodeVisitor<R>): R {
-        return visitor.visitProof?.(this) ?? visitor.visitAny!(this);
+        return visitor.visitProof ? visitor.visitProof(this) : visitor.visitAny!(this);
     }
 }
 

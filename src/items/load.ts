@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { globIterateSync } from 'glob';
 import { read as matterRead } from 'gray-matter';
-import { Definition, Media, Node, Theorem } from './nodes';
+import { Definition, Media, Node, Proof, Theorem } from './nodes';
 
 function createNode(data: Record<string, any>, content: string): Node {
     assert(typeof data.id === 'string', 'id must be a string');
@@ -15,6 +15,9 @@ function createNode(data: Record<string, any>, content: string): Node {
             return new Definition(data.id, data.creator, data.created, data.keywords || [], content);
         case 'theorem':
             return new Theorem(data.id, data.creator, data.created, data.keywords || [], content);
+        case 'proof':
+            assert(typeof data.parent === 'string', 'parent must be a string');
+            return new Proof(data.id, data.creator, data.created, data.keywords || [], data.parent, content);
         case 'media': {
             assert(typeof data.subtype === 'string', 'subtype must be a string');
             assert(!data.description || typeof data.description === 'string', 'description must be a string');
@@ -44,6 +47,13 @@ export function load(globPattern: string): Array<Node> {
     for (const filename of globIterateSync(globPattern, { nodir: true })) {
         console.log('Loading', filename);
         let { data, content } = matterRead(filename);
+        if (data.type === 'source') {
+            // TODO
+            continue;
+        } else if (data.type === 'validations') {
+            // TODO
+            continue;
+        }
         if (content.trim().length === 0 && data.path) {
             // `path` is relative to the directory containing the file
             const path = join(dirname(filename), data.path);

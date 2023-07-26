@@ -4,7 +4,7 @@ import MarkdownIt from 'markdown-it';
 import mk from '@iktakahiro/markdown-it-katex';
 import nunjucks from 'nunjucks';
 import { render as renderLess } from 'less';
-import { Concept, ItemNode, Node } from '../items/nodes';
+import { Concept, Definition, ItemNode, Node, Proof, Theorem } from '../items/nodes';
 import { LINK_REGEX } from '../items/scan';
 
 function writeFile(outputDir: string, filename: string, contents: string | Buffer) {
@@ -22,8 +22,8 @@ async function generateStyles(outputDir: string) {
 
 interface DecoratedNode {
     readonly name: string;            // Entity name
-    readonly filename: string;
-    readonly permalink: string;
+    readonly filename: string;        // Path on disk
+    readonly permalink: string;       // Path on web
     readonly blobpath?: string;       // Media blob path
 }
 
@@ -39,6 +39,7 @@ function makeRenderData(nodes: Array<Node>): Map<string, DecoratedNode> {
         const decoratedNode = node.visit<DecoratedNode>({
             visitDefinition: node => decorateNamedNode('definition', node.name),
             visitTheorem: node => decorateNamedNode('theorem', node.name),
+            visitProof: node => decorateNamedNode('proof', node.name),
             visitMedia: node => ({
                 ...decorateNamedNode('media', node.name),
                 blobpath: `/blobs/${node.name}.${node.subtype}`
@@ -71,7 +72,7 @@ function prepareMarkup(contents: string, renderDataMap: Map<string, DecoratedNod
 
 function renderItemNode(
     outputDir: string,
-    globals: Record<string, unknown>,
+    context: Record<string, unknown>,
     md: MarkdownIt,
     env: nunjucks.Environment,
     renderDataMap: Map<string, DecoratedNode>,
@@ -82,7 +83,7 @@ function renderItemNode(
     const preparedMarkup = prepareMarkup(node.markup, renderDataMap);
     const itemHtml = md.render(preparedMarkup);
     const pageHtml = env.render(template, {
-        ...globals,
+        ...context,
         name: renderData.name,
         keywords: node.keywords,
         defines: [...node.conceptDefines].map(name => renderDataMap.get(Concept.nameToId(name))!),
@@ -91,28 +92,6 @@ function renderItemNode(
         contents: itemHtml,
     });
     writeFile(outputDir, renderData.filename, pageHtml);
-}
-
-function generateItemListPage(
-    outputDir: string,
-    filename: string,
-    globals: Record<string, any>,
-    env: nunjucks.Environment,
-    renderDataMap: Map<string, DecoratedNode>,
-    title: string,
-    nodes: Array<ItemNode>
-) {
-    writeFile(outputDir, filename, env.render('item-list.njk', {
-        ...globals,
-        title,
-        items: nodes.map(node => ({
-            name: node.name,
-            created: node.created,
-            permalink: renderDataMap.get(node.id)!.permalink,
-            defines: [...node.conceptDefines],
-            keywords: node.keywords,
-        }))
-    }));
 }
 
 export async function generateSite(outputDir: string, layoutDir: string, globals: Record<string, any>, nodes: Array<Node>) {
@@ -129,7 +108,13 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
         node.visit({
             visitDefinition: node => renderItemNode(outputDir, globals, md, env, renderDataMap, 'definition.njk', node),
             visitTheorem: node => renderItemNode(outputDir, globals, md, env, renderDataMap, 'theorem.njk', node),
-            visitProof: node => renderItemNode(outputDir, globals, md, env, renderDataMap, 'proof.njk', node),
+            visitProof: node => renderItemNode(outputDir, {
+                ...globals,
+                parent: {
+                    ...renderDataMap.get(node.parent)!,
+                    name: node.parent
+                },
+            }, md, env, renderDataMap, 'proof.njk', node),
             visitMedia: node => {
                 // TODO write media page
                 const renderData = renderDataMap.get(node.id)!;
@@ -149,26 +134,67 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
         });
     }
 
-    await generateStyles(outputDir);
-
-    // Generate pages
-    writeFile(outputDir, '/index.html', env.render('root.njk', globals));
-    const definitions: Array<ItemNode> = [];
-    const theorems: Array<ItemNode> = [];
+    const definitions: Array<Definition> = [];
+    const theorems: Array<Theorem> = [];
+    const proofs: Array<Proof> = [];
     const concepts: Array<Concept> = [];
     for (const node of nodes) {
         node.visit({
             visitDefinition: node => definitions.push(node),
             visitTheorem: node => theorems.push(node),
+            visitProof: node => proofs.push(node),
             visitConcept: node => concepts.push(node),
             visitAny: () => { },
         });
     }
     definitions.sort((a, b) => b.created.getTime() - a.created.getTime());
     theorems.sort((a, b) => b.created.getTime() - a.created.getTime());
+    proofs.sort((a, b) => b.created.getTime() - a.created.getTime());
     concepts.sort((a, b) => a.name.localeCompare(b.name));
-    generateItemListPage(outputDir, '/definition/index.html', globals, env, renderDataMap, 'Definitions', definitions);
-    generateItemListPage(outputDir, '/theorem/index.html', globals, env, renderDataMap, 'Theorems', theorems);
+
+    // Style sheet
+    await generateStyles(outputDir);
+
+    // Root page
+    writeFile(outputDir, '/index.html', env.render('root.njk', globals));
+
+    // Definition list page
+    writeFile(outputDir, '/definition/index.html', env.render('definition-list.njk', {
+        ...globals,
+        items: definitions.map(node => ({
+            name: node.name,
+            created: node.created,
+            permalink: renderDataMap.get(node.id)!.permalink,
+            defines: [...node.conceptDefines],
+            keywords: node.keywords,
+        }))
+    }));
+
+    // Theorem list page
+    writeFile(outputDir, '/theorem/index.html', env.render('theorem-list.njk', {
+        ...globals,
+        items: theorems.map(node => ({
+            name: node.name,
+            created: node.created,
+            permalink: renderDataMap.get(node.id)!.permalink,
+            defines: [...node.conceptDefines],
+            keywords: node.keywords,
+        }))
+    }));
+
+    // Proof list page
+    writeFile(outputDir, '/proof/index.html', env.render('proof-list.njk', {
+        ...globals,
+        items: proofs.map(node => ({
+            name: node.name,
+            created: node.created,
+            permalink: renderDataMap.get(node.id)!.permalink,
+            defines: [...node.conceptDefines],
+            keywords: node.keywords,
+        }))
+    }));
+
+    // Concept list page
     writeFile(outputDir, '/concept/index.html', env.render('concept-list.njk', {
         ...globals,
         concepts: concepts.map(c => ({

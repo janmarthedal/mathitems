@@ -2,8 +2,7 @@ import { createConceptNodes } from "./items/concepts";
 import { load, validateIds } from "./items/load";
 import { generateSite } from "./web/generate-site";
 
-// const globPattern = 'items/**/*.md';
-const globPattern = 'items/{definitions,theorems,media}/*.md';
+const globPattern = 'items/**/*.md';
 
 const nodes = load(globPattern);
 
