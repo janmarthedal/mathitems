@@ -116,8 +116,14 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
                 },
             }, md, env, renderDataMap, 'proof.njk', node),
             visitMedia: node => {
-                // TODO write media page
                 const renderData = renderDataMap.get(node.id)!;
+                writeFile(outputDir, renderData.filename, env.render('media.njk', {
+                    ...globals,
+                    name: node.name,
+                    description: node.description,
+                    path: renderData.blobpath,
+                }));
+                // Write media blob
                 writeFile(outputDir, renderData.blobpath!, node.buffer);
             },
             visitSource: () => {
