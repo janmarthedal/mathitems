@@ -1,26 +1,39 @@
 import { Concept, Node } from "./nodes";
 
-const EMPTY_SET = new Set<string>();
+function getOrInsertWith<K, V>(map: Map<K, V>, key: K, makeDefault: () => V): V {
+    const value = map.get(key);
+    if (value !== undefined) {
+        return value;
+    }
+    const newValue = makeDefault();
+    map.set(key, newValue);
+    return newValue;
+}
 
 export function createConceptNodes(nodes: Array<Node>): Array<Concept> {
-    const allConcepts = new Set<string>();
+    const allConcepts = new Map<string, Array<string>>();
     for (const node of nodes) {
-        const conceptDefines = node.visit({
-            visitDefinition: def => def.conceptDefines,
-            visitDefault: () => EMPTY_SET
+        node.visit({
+            visitDefinition: def => {
+                for (const name of def.conceptDefines) {
+                    getOrInsertWith(allConcepts, name, () => []).push(def.name);
+                }
+                for (const name of def.conceptRefs) {
+                    getOrInsertWith(allConcepts, name, () => []);
+                }
+            },
+            visitTheorem: thm => {
+                for (const name of thm.conceptRefs) {
+                    getOrInsertWith(allConcepts, name, () => []);
+                }
+            },
+            visitProof: prf => {
+                for (const name of prf.conceptRefs) {
+                    getOrInsertWith(allConcepts, name, () => []);
+                }
+            },
+            visitAny: () => { }
         });
-        const conceptRefs = node.visit({
-            visitDefinition: def => def.conceptRefs,
-            visitTheorem: thm => thm.conceptRefs,
-            visitProof: prf => prf.conceptRefs,
-            visitDefault: () => EMPTY_SET
-        });
-        for (const concept of conceptDefines) {
-            allConcepts.add(concept);
-        }
-        for (const concept of conceptRefs) {
-            allConcepts.add(concept);
-        }
     }
-    return [...allConcepts].map(name => new Concept(name));
+    return [...allConcepts.entries()].map(([name, definedBy]) => new Concept(name, definedBy));
 }

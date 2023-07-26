@@ -43,13 +43,13 @@ export abstract class ItemNode extends NamedNode {
 
 export class Definition extends ItemNode {
     visit<R>(visitor: NodeVisitor<R>): R {
-        return visitor.visitDefinition ? visitor.visitDefinition(this) : visitor.visitDefault!(this);
+        return visitor.visitDefinition ? visitor.visitDefinition(this) : visitor.visitAny!(this);
     }
 }
 
 export class Theorem extends ItemNode {
     visit<R>(visitor: NodeVisitor<R>): R {
-        return visitor.visitTheorem ? visitor.visitTheorem(this) : visitor.visitDefault!(this);
+        return visitor.visitTheorem ? visitor.visitTheorem(this) : visitor.visitAny!(this);
     }
 }
 
@@ -65,7 +65,7 @@ export class Proof extends ItemNode {
         super(id, creator, created, keywords, markup);
     }
     visit<R>(visitor: NodeVisitor<R>): R {
-        return visitor.visitProof ? visitor.visitProof(this) : visitor.visitDefault!(this);
+        return visitor.visitProof?.(this) ?? visitor.visitAny!(this);
     }
 }
 
@@ -81,7 +81,7 @@ export class Media extends NamedNode {
         super(id, creator, created, id);
     }
     visit<R>(visitor: NodeVisitor<R>): R {
-        return visitor.visitMedia ? visitor.visitMedia(this) : visitor.visitDefault!(this);
+        return visitor.visitMedia? visitor.visitMedia(this) : visitor.visitAny!(this);
     }
 }
 
@@ -96,7 +96,7 @@ export class Source extends Node {
         super(id, creator, created);
     }
     visit<R>(visitor: NodeVisitor<R>): R {
-        return visitor.visitSource ? visitor.visitSource(this) : visitor.visitDefault!(this);
+        return visitor.visitSource ? visitor.visitSource(this) : visitor.visitAny!(this);
     }
 }
 
@@ -112,13 +112,14 @@ export class Validation extends Node {
         super(id, creator, created);
     }
     visit<R>(visitor: NodeVisitor<R>): R {
-        return visitor.visitValidation ? visitor.visitValidation(this) : visitor.visitDefault!(this);
+        return visitor.visitValidation ? visitor.visitValidation(this) : visitor.visitAny!(this);
     }
 }
 
 export class Concept extends NamedNode {
     constructor(
-        public readonly name: string
+        public readonly name: string,
+        public readonly definedBy: Array<string>,
     ) {
         super(Concept.nameToId(name), 'system', new Date(), name);
     }
@@ -126,7 +127,7 @@ export class Concept extends NamedNode {
         return '#' + name;
     }
     visit<R>(visitor: NodeVisitor<R>): R {
-        return visitor.visitConcept ? visitor.visitConcept(this) : visitor.visitDefault!(this);
+        return visitor.visitConcept ? visitor.visitConcept(this) : visitor.visitAny!(this);
     }
 }
 
@@ -138,5 +139,5 @@ export interface NodeVisitor<R> {
     visitSource?: (node: Source) => R;
     visitValidation?: (node: Validation) => R;
     visitConcept?: (node: Concept) => R;
-    visitDefault?: (node: Node) => R;
+    visitAny?: (node: Node) => R;
 }
