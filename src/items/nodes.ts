@@ -25,6 +25,7 @@ export abstract class ItemNode extends NamedNode {
     public readonly conceptDefines: Set<string>;
     public readonly conceptRefs: Set<string>;
     public readonly itemRefs: Set<string>;
+    public readonly validations: Array<Validation> = [];
     constructor(
         name: string,
         creator: string,
@@ -106,8 +107,8 @@ export class Validation extends Node {
         id: string,
         creator: string,
         created: Date,
-        public readonly source: string,
         public readonly item: string,
+        public readonly source: string,
         public readonly location: string
     ) {
         super(id, creator, created);

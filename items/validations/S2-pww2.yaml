@@ -1,0 +1,32 @@
+type: validation
+subtype: source
+source: S2
+list:
+  - item: T4
+    location: Page 116
+    creator: U1
+    created: 2021-07-17
+  - item: T7
+    location: Page 114
+    creator: U1
+    created: 2021-07-17
+  - item: T8
+    location: Page 115
+    creator: U1
+    created: 2021-07-17
+  - item: D13
+    location: Page 95
+    creator: U1
+    created: 2021-07-17
+  - item: T36
+    location: Page 107
+    creator: U1
+    created: 2021-07-17
+  - item: D46
+    location: Page 103
+    creator: U1
+    created: 2021-07-17
+  - item: T47
+    location: Page 83
+    creator: U1
+    created: 2021-07-17

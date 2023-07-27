@@ -1,0 +1,36 @@
+type: validation
+subtype: source
+source: S5
+list:
+  - item: D26
+    location: Page 1
+    creator: U1
+    created: 2021-07-17
+  - item: D27
+    location: Page 1
+    creator: U1
+    created: 2021-07-17
+  - item: D29
+    location: Page 1
+    creator: U1
+    created: 2021-07-17
+  - item: D30
+    location: Page 1
+    creator: U1
+    created: 2021-07-17
+  - item: D31
+    location: Page 2
+    creator: U1
+    created: 2021-07-17
+  - item: D32
+    location: Page 1
+    creator: U1
+    created: 2021-07-17
+  - item: T77
+    location: Page 246
+    creator: U1
+    created: 2021-07-17
+  - item: T78
+    location: Page 17
+    creator: U1
+    created: 2021-07-17

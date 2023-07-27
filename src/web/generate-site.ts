@@ -36,7 +36,7 @@ function decorateNamedNode(pathitem: string, name: string): DecoratedNode {
 function makeRenderData(nodes: Array<Node>): Map<string, DecoratedNode> {
     const renderData = new Map<string, DecoratedNode>();
     for (const node of nodes) {
-        const decoratedNode = node.visit<DecoratedNode>({
+        const decoratedNode = node.visit<DecoratedNode | undefined>({
             visitDefinition: node => decorateNamedNode('definition', node.name),
             visitTheorem: node => decorateNamedNode('theorem', node.name),
             visitProof: node => decorateNamedNode('proof', node.name),
@@ -46,8 +46,11 @@ function makeRenderData(nodes: Array<Node>): Map<string, DecoratedNode> {
             }),
             visitConcept: node => decorateNamedNode('concept', node.name),
             visitSource: node => decorateNamedNode('source', node.name),
+            visitValidation: () => undefined,
         });
-        renderData.set(node.id, decoratedNode);
+        if (decoratedNode) {
+            renderData.set(node.id, decoratedNode);
+        }
     }
     return renderData;
 }
@@ -77,6 +80,7 @@ function renderItemNode(
     md: MarkdownIt,
     env: nunjucks.Environment,
     renderDataMap: Map<string, DecoratedNode>,
+    sourceMap: Map<string, Source>,
     template: string,
     node: ItemNode
 ) {
@@ -86,10 +90,22 @@ function renderItemNode(
     const pageHtml = env.render(template, {
         ...context,
         name: renderData.name,
+        created: node.created,
         keywords: node.keywords,
         defines: [...node.conceptDefines].map(name => renderDataMap.get(Concept.nameToId(name))!),
         itemRefs: [...node.itemRefs].map(id => renderDataMap.get(id)!),
         conceptRefs: [...node.conceptRefs].map(name => renderDataMap.get(Concept.nameToId(name))!),
+        validations: node.validations.map(val => {
+            const source = sourceMap.get(val.source)!;
+            return {
+                location: val.location,
+                source: {
+                    title: source.title,
+                    extra: source.extra,
+                    permalink: renderDataMap.get(source.id)!.permalink,
+                }
+            };
+        }),
         contents: itemHtml,
     });
     writeFile(outputDir, renderData.filename, pageHtml);
@@ -105,17 +121,43 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
     env.addFilter('url', (obj: any) => '' + obj);
     env.addFilter('formatDate', (date: Date) => date.toISOString().substring(0, 16).replace('T', ' '));
 
+    const definitions: Array<Definition> = [];
+    const theorems: Array<Theorem> = [];
+    const proofs: Array<Proof> = [];
+    const concepts: Array<Concept> = [];
+    const medias: Array<Media> = [];
+    const sources: Array<Source> = [];
     for (const node of nodes) {
         node.visit({
-            visitDefinition: node => renderItemNode(outputDir, globals, md, env, renderDataMap, 'item/definition.njk', node),
-            visitTheorem: node => renderItemNode(outputDir, globals, md, env, renderDataMap, 'item/theorem.njk', node),
+            visitDefinition: node => definitions.push(node),
+            visitTheorem: node => theorems.push(node),
+            visitProof: node => proofs.push(node),
+            visitConcept: node => concepts.push(node),
+            visitMedia: node => medias.push(node),
+            visitSource: node => sources.push(node),
+            visitAny: () => { },
+        });
+    }
+    definitions.sort((a, b) => b.created.getTime() - a.created.getTime());
+    theorems.sort((a, b) => b.created.getTime() - a.created.getTime());
+    proofs.sort((a, b) => b.created.getTime() - a.created.getTime());
+    medias.sort((a, b) => b.created.getTime() - a.created.getTime());
+    sources.sort((a, b) => b.created.getTime() - a.created.getTime());
+    concepts.sort((a, b) => a.name.localeCompare(b.name));
+
+    const sourceMap = new Map(sources.map(source => [source.id, source] as const));
+
+    for (const node of nodes) {
+        node.visit({
+            visitDefinition: node => renderItemNode(outputDir, globals, md, env, renderDataMap, sourceMap, 'item/definition.njk', node),
+            visitTheorem: node => renderItemNode(outputDir, globals, md, env, renderDataMap, sourceMap, 'item/theorem.njk', node),
             visitProof: node => renderItemNode(outputDir, {
                 ...globals,
                 parent: {
                     ...renderDataMap.get(node.parent)!,
                     name: node.parent
                 },
-            }, md, env, renderDataMap, 'item/proof.njk', node),
+            }, md, env, renderDataMap, sourceMap, 'item/proof.njk', node),
             visitMedia: node => {
                 const renderData = renderDataMap.get(node.id)!;
                 writeFile(outputDir, renderData.filename, env.render('item/media.njk', {
@@ -146,30 +188,6 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
             },
         });
     }
-
-    const definitions: Array<Definition> = [];
-    const theorems: Array<Theorem> = [];
-    const proofs: Array<Proof> = [];
-    const concepts: Array<Concept> = [];
-    const medias: Array<Media> = [];
-    const sources: Array<Source> = [];
-    for (const node of nodes) {
-        node.visit({
-            visitDefinition: node => definitions.push(node),
-            visitTheorem: node => theorems.push(node),
-            visitProof: node => proofs.push(node),
-            visitConcept: node => concepts.push(node),
-            visitMedia: node => medias.push(node),
-            visitSource: node => sources.push(node),
-            visitAny: () => { },
-        });
-    }
-    definitions.sort((a, b) => b.created.getTime() - a.created.getTime());
-    theorems.sort((a, b) => b.created.getTime() - a.created.getTime());
-    proofs.sort((a, b) => b.created.getTime() - a.created.getTime());
-    medias.sort((a, b) => b.created.getTime() - a.created.getTime());
-    sources.sort((a, b) => b.created.getTime() - a.created.getTime());
-    concepts.sort((a, b) => a.name.localeCompare(b.name));
 
     // Style sheet
     await generateStyles(outputDir);

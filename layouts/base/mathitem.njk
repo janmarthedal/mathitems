@@ -55,18 +55,17 @@
     {{ contents | safe }}
     </div>
 
-    {# <aside class="validations">
-        {%- set validations = id | itemValidations -%}
+    <aside class="validations">
         <p>Created at {{ created | formatDate }}</p>
         {% if validations | length %}
         <p>Validations:</p>
         <ul>
         {%- for v in validations %}
-        <li>{{ v.source.data.author }}, {{ v.source.data.title }}, {{ v.location }}</li>
+        <li><a href="{{ v.source.permalink | url }}">{{ v.source.extra.author }}, {{ v.source.title }}</a>, {{ v.location }}</li>
         {%- endfor %}
         </ul>
         {% endif %}
-    </aside> #}
+    </aside>
 </article>
 
 {%- endblock %}

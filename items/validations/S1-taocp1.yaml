@@ -1,0 +1,100 @@
+type: validation
+subtype: source
+source: S1
+list:
+  - item: D1
+    location: Equation 1, page 75
+    creator: U1
+    created: 2021-07-17
+  - item: T2
+    location: Equation 2, page 75
+    creator: U1
+    created: 2021-07-17
+  - item: T3
+    location: Equation 8, page 76
+    creator: U1
+    created: 2021-07-17
+  - item: D9
+    location: Equation 2, page 79
+    creator: U1
+    created: 2021-07-17
+  - item: T10
+    location: Equation 4, page 81
+    creator: U1
+    created: 2021-07-17
+  - item: T11
+    location: Equation 5, page 81
+    creator: U1
+    created: 2021-07-17
+  - item: T12
+    location: Equation 6, page 81
+    creator: U1
+    created: 2021-07-17
+  - item: T23
+    location: Page 41
+    creator: U1
+    created: 2021-07-17
+  - item: T28
+    location: Page 55
+    creator: U1
+    created: 2021-07-17
+  - item: T37
+    location: Page 83
+    creator: U1
+    created: 2021-07-17
+  - item: T42
+    location: Page 76
+    creator: U1
+    created: 2021-07-17
+  - item: T43
+    location: Page 19
+    creator: U1
+    created: 2021-07-17
+  - item: T44
+    location: Page 19
+    creator: U1
+    created: 2021-07-17
+  - item: T45
+    location: Page 35
+    creator: U1
+    created: 2021-07-17
+  - item: T49
+    location: Page 52
+    creator: U1
+    created: 2021-07-17
+  - item: D52
+    location: Page 53
+    creator: U1
+    created: 2021-07-17
+  - item: T53
+    location: Page 55
+    creator: U1
+    created: 2021-07-17
+  - item: T55
+    location: Page 55
+    creator: U1
+    created: 2021-07-17
+  - item: T56
+    location: Page 57
+    creator: U1
+    created: 2021-07-17
+  - item: T57
+    location: Page 81
+    creator: U1
+    created: 2021-07-17
+  - item: T59
+    location: Page 57
+    creator: U1
+    created: 2021-07-17
+  - item: T60
+    location: Page 57
+    creator: U1
+    created: 2021-07-17
+  - item: T61
+    location: Page 58
+    creator: U1
+    created: 2021-07-17
+  - item: T79
+    location: Page 35
+    creator: U1
+    created: 2021-07-17
