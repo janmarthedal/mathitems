@@ -1,3 +1,5 @@
 {% extends 'base/mathitem.njk' %}
 
+{% block pagetitle %}{{ name }}{% endblock %}
+
 {% block title %}Proof {{ name }} of <a href="{{ parent.permalink | url }}">{{ parent.name }}</a>{% endblock %}
