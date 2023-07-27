@@ -99,6 +99,5 @@ export function load(globPattern: string): Array<Node> {
             nodes.push(node);
         }
     }
-    console.log('Validation count:', validationCount - 1);
     return nodes;
 }

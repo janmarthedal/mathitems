@@ -1,9 +1,9 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname } from 'path';
 import MarkdownIt from 'markdown-it';
-import mk from '@iktakahiro/markdown-it-katex';
 import nunjucks from 'nunjucks';
 import { render as renderLess } from 'less';
+import mk from '@iktakahiro/markdown-it-katex';
 import { Concept, Definition, ItemNode, Media, Node, Proof, Source, Theorem } from '../items/nodes';
 import { LINK_REGEX } from '../items/scan';
 
@@ -78,16 +78,15 @@ function renderItemNode(
     outputDir: string,
     context: Record<string, unknown>,
     md: MarkdownIt,
-    env: nunjucks.Environment,
+    template: nunjucks.Template,
     renderDataMap: Map<string, DecoratedNode>,
     sourceMap: Map<string, Source>,
-    template: string,
     node: ItemNode
 ) {
     const renderData = renderDataMap.get(node.id)!;
     const preparedMarkup = prepareMarkup(node.markup, renderDataMap);
     const itemHtml = md.render(preparedMarkup);
-    const pageHtml = env.render(template, {
+    const pageHtml = template.render({
         ...context,
         name: renderData.name,
         created: node.created,
@@ -110,6 +109,15 @@ function renderItemNode(
     });
     writeFile(outputDir, renderData.filename, pageHtml);
 }
+
+const ITEM_TEMPLATES = [
+    'definition',
+    'theorem',
+    'proof',
+    'media',
+    'source',
+    'concept',
+];
 
 export async function generateSite(outputDir: string, layoutDir: string, globals: Record<string, any>, nodes: Array<Node>) {
     const renderDataMap = makeRenderData(nodes);
@@ -146,21 +154,22 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
     concepts.sort((a, b) => a.name.localeCompare(b.name));
 
     const sourceMap = new Map(sources.map(source => [source.id, source] as const));
+    const templates = Object.fromEntries(ITEM_TEMPLATES.map(name => [name, env.getTemplate(`item/${name}.njk`, true)]));
 
     for (const node of nodes) {
         node.visit({
-            visitDefinition: node => renderItemNode(outputDir, globals, md, env, renderDataMap, sourceMap, 'item/definition.njk', node),
-            visitTheorem: node => renderItemNode(outputDir, globals, md, env, renderDataMap, sourceMap, 'item/theorem.njk', node),
+            visitDefinition: node => renderItemNode(outputDir, globals, md, templates['definition'], renderDataMap, sourceMap, node),
+            visitTheorem: node => renderItemNode(outputDir, globals, md, templates['theorem'], renderDataMap, sourceMap, node),
             visitProof: node => renderItemNode(outputDir, {
                 ...globals,
                 parent: {
                     ...renderDataMap.get(node.parent)!,
                     name: node.parent
                 },
-            }, md, env, renderDataMap, sourceMap, 'item/proof.njk', node),
+            }, md, templates['proof'], renderDataMap, sourceMap, node),
             visitMedia: node => {
                 const renderData = renderDataMap.get(node.id)!;
-                writeFile(outputDir, renderData.filename, env.render('item/media.njk', {
+                writeFile(outputDir, renderData.filename, templates['media'].render({
                     ...globals,
                     name: node.name,
                     description: node.description,
@@ -171,7 +180,7 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
             },
             visitSource: node => {
                 const renderData = renderDataMap.get(node.id)!;
-                writeFile(outputDir, renderData.filename, env.render('item/source.njk', {
+                writeFile(outputDir, renderData.filename, templates['source'].render({
                     ...globals,
                     name: node.name,
                     title: node.title,
@@ -180,7 +189,7 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
             },
             visitValidation: () => { },
             visitConcept: node => {
-                writeFile(outputDir, renderDataMap.get(node.id)!.filename, env.render('item/concept.njk', {
+                writeFile(outputDir, renderDataMap.get(node.id)!.filename, templates['concept'].render({
                     ...globals,
                     name: node.name,
                     items: node.definedBy.map(id => renderDataMap.get(id)!),
