@@ -2,20 +2,20 @@ type: validation
 subtype: source
 source: S3
 list:
-  - item: T10
-    location: Page 107
+  - item: T36
+    location: Page 105
     creator: U1
     created: 2021-07-17
   - item: T11
     location: Page 106
     creator: U1
     created: 2021-07-17
-  - item: T12
+  - item: T10
     location: Page 107
     creator: U1
     created: 2021-07-17
-  - item: T36
-    location: Page 105
+  - item: T12
+    location: Page 107
     creator: U1
     created: 2021-07-17
   - item: T37
@@ -26,3 +26,7 @@ list:
     location: Page 215
     creator: U1
     created: 2021-07-17
+  - item: T103
+    location: Page 247
+    creator: U1
+    created: 2023-07-28
