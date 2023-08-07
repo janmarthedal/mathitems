@@ -67,7 +67,7 @@ function prepareMarkup(contents: string, renderDataMap: Map<string, DecoratedNod
         const [itemRef, conceptRef] = link.split('#');
         if (conceptRef && !itemRef) {
             const conceptNode = renderDataMap.get(Concept.nameToId(conceptRef))!;
-            return `[${text}](${conceptNode.permalink})`;
+            return `[${text || conceptRef}](${conceptNode.permalink})`;
         }
         const refItemNode = renderDataMap.get(itemRef)!;
         return conceptRef ? `[${text}](${refItemNode.permalink}#${conceptRef})` : `[${text}](${refItemNode.permalink})`;
