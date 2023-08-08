@@ -4,7 +4,8 @@
   "description": "MathItems",
   "main": "index.js",
   "scripts": {
-    "test": "npm run check",
+    "test": "npm run lint && npm run check",
+    "lint": "eslint src",
     "check": "node --enable-source-maps build/check.js",
     "clean": "rimraf _site",
     "serve": "cd _site && python3 -m http.server 8000",
