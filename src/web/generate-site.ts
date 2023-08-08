@@ -119,14 +119,14 @@ const ITEM_TEMPLATES = [
     'concept',
 ];
 
-export async function generateSite(outputDir: string, layoutDir: string, globals: Record<string, any>, nodes: Array<Node>) {
+export async function generateSite(outputDir: string, layoutDir: string, globals: Record<string, unknown>, nodes: Array<Node>) {
     const renderDataMap = makeRenderData(nodes);
 
     const md = new MarkdownIt();
     md.use(mk);
 
     const env = new nunjucks.Environment(new nunjucks.FileSystemLoader(layoutDir), { autoescape: true });
-    env.addFilter('url', (obj: any) => '' + obj);
+    env.addFilter('url', (obj: unknown) => '' + obj);
     env.addFilter('formatDate', (date: Date) => date.toISOString().substring(0, 16).replace('T', ' '));
 
     const definitions: Array<Definition> = [];

@@ -8,7 +8,7 @@ import { Definition, Media, Node, Proof, Source, Theorem, Validation } from './n
 
 let validationCount = 1;
 
-function createNode(data: Record<string, any>, content: string): Node {
+function createNode(data: Record<string, unknown>, content: string): Node {
     if (data.type === 'validation') {
         data.id = 'V' + validationCount++;
     }
@@ -18,22 +18,22 @@ function createNode(data: Record<string, any>, content: string): Node {
     assert(Number.isFinite(data.created.getTime()), 'created must be a valid Date');
     switch (data.type) {
         case 'definition':
-            return new Definition(data.id, data.creator, data.created, data.keywords || [], content);
+            return new Definition(data.id, data.creator, data.created, data.keywords as Array<string> || [], content);
         case 'theorem':
-            return new Theorem(data.id, data.creator, data.created, data.keywords || [], content);
+            return new Theorem(data.id, data.creator, data.created, data.keywords as Array<string> || [], content);
         case 'proof':
             assert(typeof data.parent === 'string', 'parent must be a string');
-            return new Proof(data.id, data.creator, data.created, data.keywords || [], data.parent, content);
+            return new Proof(data.id, data.creator, data.created, data.keywords as Array<string> || [], data.parent, content);
         case 'media': {
             assert(typeof data.subtype === 'string', 'subtype must be a string');
             assert(!data.description || typeof data.description === 'string', 'description must be a string');
-            return new Media(data.id, data.creator, data.created, data.subtype, data.description || '', Buffer.from(content));
+            return new Media(data.id, data.creator, data.created, data.subtype, data.description as string || '', Buffer.from(content));
         }
         case 'source':
             assert(typeof data.subtype === 'string', 'subtype must be a string');
             assert(typeof data.title === 'string', 'title must be a string');
             assert(typeof data.extra === 'object', 'extra must be an object');
-            return new Source(data.id, data.creator, data.created, data.subtype, data.title, data.extra);
+            return new Source(data.id, data.creator, data.created, data.subtype, data.title, data.extra as Record<string, unknown>);
         case 'validation':
             assert(data.subtype === 'source', 'subtype must be "source"');
             assert(typeof data.item === 'string', 'item must be a string');
@@ -64,7 +64,7 @@ export function load(globPattern: string): Array<Node> {
     for (const filename of globIterateSync(globPattern, { nodir: true })) {
         console.log('Loading', filename);
 
-        let data: Record<string, any> = {};
+        let data: Record<string, unknown> = {};
         let content = '';
 
         const extension = extname(filename);
@@ -73,7 +73,7 @@ export function load(globPattern: string): Array<Node> {
             data = dataContent.data;
             content = dataContent.content;
         } else if (extension === '.yaml') {
-            data = loadYaml(readFileSync(filename, 'utf8')) as Record<string, any>;
+            data = loadYaml(readFileSync(filename, 'utf8')) as Record<string, unknown>;
         } else if (extension === '.svg') {
             // ignore, will (should) be loaded via a media node
             continue;
@@ -83,13 +83,13 @@ export function load(globPattern: string): Array<Node> {
 
         if (content.trim().length === 0 && data.path) {
             // `path` is relative to the directory containing the file
-            const path = join(dirname(filename), data.path);
+            const path = join(dirname(filename), data.path as string);
             content = readFileSync(path, 'utf8');
         }
 
         if (data.list) {
             const base = { ...data, list: undefined };
-            for (const item of data.list) {
+            for (const item of data.list as Array<Record<string, unknown>>) {
                 const itemData = { ...base, ...item };
                 const node = createNode(itemData, content);
                 nodes.push(node);

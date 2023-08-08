@@ -15,7 +15,7 @@ export function scanItemMarkup(markup: string): {
     const conceptRefs = new Set<string>();
     const itemRefs = new Set<string>();
     for (const m of markup.matchAll(LINK_REGEX)) {
-        const [match, bang, _text, link] = m;
+        const [match, bang, /* text */, link] = m;
         if (bang) {
             mediaUses.add(link);
         } else if (link.startsWith('=')) {
