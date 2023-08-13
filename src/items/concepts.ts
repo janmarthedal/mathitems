@@ -1,5 +1,7 @@
 import { Concept, Node } from "./nodes";
 
+export const CONCEPT_PATTERN = '[a-zA-Z-]+';
+
 function getOrInsertWith<K, V>(map: Map<K, V>, key: K, makeDefault: () => V): V {
     const value = map.get(key);
     if (value !== undefined) {

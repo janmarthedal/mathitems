@@ -1,15 +1,6 @@
 import { ItemNode, Node } from "./nodes";
 
-export function attachValidations(nodes: Array<Node>) {
-    const itemMap = new Map<string, ItemNode>();
-    for (const node of nodes) {
-        node.visit({
-            visitDefinition: node => itemMap.set(node.id, node),
-            visitTheorem: node => itemMap.set(node.id, node),
-            visitProof: node => itemMap.set(node.id, node),
-            visitAny: () => { }
-        });
-    }
+export function attachValidations(nodes: Array<Node>, itemMap: Map<string, ItemNode>) {
     for (const node of nodes) {
         node.visit({
             visitValidation: val => {

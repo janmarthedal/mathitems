@@ -1,7 +1,10 @@
+import { CONCEPT_PATTERN } from "./concepts";
+
 export const LINK_REGEX = /(!?)\[(.*?)\]\((.*?)\)/gm;
+const CONCEPT_REGEX = new RegExp(`^${CONCEPT_PATTERN}$`);
 
 function isLegalConcept(concept: string): boolean {
-    return /^[a-zA-Z-]+$/.test(concept);
+    return CONCEPT_REGEX.test(concept);
 }
 
 export function scanItemMarkup(markup: string): {
