@@ -46,17 +46,6 @@ function createNode(data: Record<string, unknown>, content: string): Node {
     }
 }
 
-export function validateUniqueIds(nodes: Array<Node>) {
-    const ids = new Set<string>();
-    for (const item of nodes) {
-        const id = item.id;
-        if (ids.has(id)) {
-            throw new Error(`Duplicate id: ${id}`);
-        }
-        ids.add(id);
-    }
-}
-
 export function load(globPattern: string): Array<Node> {
     const nodes: Array<Node> = [];
     for (const filename of globIterateSync(globPattern, { nodir: true })) {
