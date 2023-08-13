@@ -1,5 +1,5 @@
 import { CONCEPT_PATTERN } from "./concepts";
-import { Node } from "./nodes";
+import { ItemNode, Node } from "./nodes";
 
 export function checkUniqueIds(nodes: Array<Node>) {
     const ids = new Set<string>();
@@ -27,4 +27,19 @@ export function checkItemTypeIds(nodes: Array<Node>) {
             throw new Error(`Illegal id: ${node.id}`);
         }
     }
+}
+
+export function checkUniqueItemNumbers(items: Array<ItemNode>): number {
+    const numbers = new Set<number>();
+    let max = 0;
+    for (const node of items) {
+        // Assumes the id structure from `checkItemTypeIds`
+        const number = +node.id.substring(1);
+        if (numbers.has(number)) {
+            throw new Error(`Duplicate item number: ${number} (${node.id})`);
+        }
+        numbers.add(number);
+        max = Math.max(max, number);
+    }
+    return max;
 }
