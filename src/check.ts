@@ -1,3 +1,5 @@
 import { loadNodes } from "./load-nodes";
 
-loadNodes();
+const { freeNumbers } = loadNodes();
+
+console.log(`Free item numbers: ${freeNumbers.join(', ')}-`);

@@ -119,7 +119,9 @@ const ITEM_TEMPLATES = [
     'concept',
 ];
 
-export async function generateSite(outputDir: string, layoutDir: string, globals: Record<string, unknown>, nodes: Array<Node>) {
+export async function generateSite(
+    outputDir: string, layoutDir: string, globals: Record<string, unknown>, nodes: Array<Node>, freeNumbers: Array<number>
+) {
     const renderDataMap = makeRenderData(nodes);
 
     const md = new MarkdownIt();
@@ -269,4 +271,6 @@ export async function generateSite(outputDir: string, layoutDir: string, globals
             title: n.title,
         })),
     }));
+
+    writeFile(outputDir, '/free.html', freeNumbers.join(', ') + '-');
 }

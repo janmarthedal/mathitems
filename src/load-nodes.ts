@@ -1,5 +1,5 @@
 import { load } from "./items/load";
-import { checkItemTypeIds, checkUniqueIds, checkUniqueItemNumbers } from "./items/checks";
+import { checkItemTypeIds, checkUniqueIds, checkUniqueItemNumbers, getFreeItemNumbers } from "./items/checks";
 import { createConceptNodes } from "./items/concepts";
 import { attachValidations } from "./items/validations";
 import { ItemNode, Node } from "./items/nodes";
@@ -19,7 +19,7 @@ function makeItemList(nodes: Array<Node>): Array<ItemNode> {
     return items;
 }
 
-export function loadNodes(): Array<Node> {
+export function loadNodes(): { nodes: Array<Node>, freeNumbers: Array<number> } {
     const nodes = load(GLOB_PATTERN);
     console.log('Loaded', nodes.length, 'nodes');
 
@@ -33,8 +33,8 @@ export function loadNodes(): Array<Node> {
     attachValidations(allNodes, itemMap);
 
     checkItemTypeIds(allNodes);
-    const maxNumber = checkUniqueItemNumbers(items);
-    console.log('First free item number:', maxNumber + 1);
+    checkUniqueItemNumbers(items);
+    const freeNumbers = getFreeItemNumbers(items);
 
-    return allNodes;
+    return { nodes: allNodes, freeNumbers };
 }

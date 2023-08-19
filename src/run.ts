@@ -1,8 +1,8 @@
 import { loadNodes } from "./load-nodes";
 import { generateSite } from "./web/generate-site";
 
-const allNodes = loadNodes();
+const { nodes, freeNumbers } = loadNodes();
 
 (async () => {
-    await generateSite('_site', 'layouts', { sitename: 'MathItems' }, allNodes);
+    await generateSite('_site', 'layouts', { sitename: 'MathItems' }, nodes, freeNumbers);
 })();

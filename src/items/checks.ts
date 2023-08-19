@@ -1,3 +1,4 @@
+import assert from "assert";
 import { CONCEPT_PATTERN } from "./concepts";
 import { ItemNode, Node } from "./nodes";
 
@@ -29,9 +30,8 @@ export function checkItemTypeIds(nodes: Array<Node>) {
     }
 }
 
-export function checkUniqueItemNumbers(items: Array<ItemNode>): number {
+export function checkUniqueItemNumbers(items: Array<ItemNode>) {
     const numbers = new Set<number>();
-    let max = 0;
     for (const node of items) {
         // Assumes the id structure from `checkItemTypeIds`
         const number = +node.id.substring(1);
@@ -39,7 +39,25 @@ export function checkUniqueItemNumbers(items: Array<ItemNode>): number {
             throw new Error(`Duplicate item number: ${number} (${node.id})`);
         }
         numbers.add(number);
-        max = Math.max(max, number);
     }
-    return max;
+}
+
+// Assumes the id structure from `checkItemTypeIds`
+// Assumes distinct item numbers
+export function getFreeItemNumbers(items: Array<ItemNode>): Array<number> {
+    const numbers = items.map(item => +item.id.substring(1));
+    const freeNumbers: Array<number> = [];
+    numbers.sort((a, b) => a - b);
+    let i = 1;
+    while (numbers.length > 0) {
+        const number = numbers.shift()!;
+        while (i < number) {
+            freeNumbers.push(i);
+            i++;
+        }
+        assert(i === number);
+        i++;
+    }
+    freeNumbers.push(i);
+    return freeNumbers;
 }
