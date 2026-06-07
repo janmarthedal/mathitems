@@ -3,13 +3,14 @@
 ## Commands
 
 ```bash
-npm run build    # compile TypeScript (src/ → build/)
-npm run make     # generate static site (build/ → _site/)
-npm run check    # validate items and print free item numbers
-npm run lint     # ESLint on src/
-npm run test     # lint + check (no site generation)
-npm run serve    # serve _site/ at http://localhost:8000
-npm run clean    # remove _site/
+npm run make:full  # compile TypeScript + generate static site (full build)
+npm run build      # compile TypeScript only (src/ → build/)
+npm run make       # generate static site only (build/ → _site/)
+npm run check      # validate items and print free item numbers
+npm run lint       # ESLint on src/
+npm run test       # lint + check (no site generation)
+npm run serve      # serve _site/ at http://localhost:8080 (sirv)
+npm run clean      # remove _site/
 ```
 
 After editing TypeScript source, run `npm run build` before `npm run make` or `npm run check`.

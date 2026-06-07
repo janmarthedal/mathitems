@@ -3,21 +3,22 @@ import { dirname } from 'path';
 import MarkdownIt from 'markdown-it';
 import nunjucks from 'nunjucks';
 import { render as renderLess } from 'less';
+import CleanCSS from 'clean-css';
 import mk from '@iktakahiro/markdown-it-katex';
 import { Concept, Definition, ItemNode, Media, Node, Proof, Source, Theorem } from '../items/nodes';
 import { LINK_REGEX } from '../items/scan';
 
-function writeFile(outputDir: string, filename: string, contents: string | Buffer) {
+function writeFile(outputDir: string, filename: string, contents: string | Uint8Array) {
     const path = `${outputDir}/${filename}`;
     mkdirSync(dirname(path), { recursive: true });
     writeFileSync(path, contents);
 }
 
-// TODO: Use glob to find all `less` files to process
 async function generateStyles(outputDir: string) {
     const contents = readFileSync('static/styles.less', 'utf8');
     const css = await renderLess(contents);
-    writeFile(outputDir, 'styles.css', css.css);
+    const minified = new CleanCSS().minify(css.css);
+    writeFile(outputDir, 'styles.css', minified.styles);
 }
 
 interface DecoratedNode {

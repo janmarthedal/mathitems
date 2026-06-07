@@ -77,7 +77,7 @@ export class Media extends NamedNode {
         created: Date,
         public readonly subtype: string,
         public readonly description: string,
-        public readonly buffer: Buffer
+        public readonly buffer: Uint8Array
     ) {
         super(id, creator, created, id);
     }

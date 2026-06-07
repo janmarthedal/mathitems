@@ -23,7 +23,7 @@ export function createNode(data: Record<string, unknown>, content: string): Node
         case 'media': {
             assert(typeof data.subtype === 'string', 'subtype must be a string');
             assert(!data.description || typeof data.description === 'string', 'description must be a string');
-            return new Media(data.id, data.creator, data.created, data.subtype, data.description as string || '', Buffer.from(content));
+            return new Media(data.id, data.creator, data.created, data.subtype, data.description as string || '', new Uint8Array(Buffer.from(content)));
         }
         case 'source':
             assert(typeof data.subtype === 'string', 'subtype must be a string');
