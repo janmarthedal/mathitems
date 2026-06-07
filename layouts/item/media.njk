@@ -6,6 +6,10 @@
 <main>
     <h2>{{ name }}</h2>
     <h3>{{ description }}</h3>
+    {% if subtype === 'html' %}
+    <iframe src="{{ path | url }}" sandbox="allow-scripts" width="460" height="480" style="border:none;display:block;"></iframe>
+    {% else %}
     <img src="{{ path | url }}">
+    {% endif %}
 </main>
 {%- endblock %}

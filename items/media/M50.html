@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #fff;
+  font-family: Georgia, 'Times New Roman', serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 8px 8px;
+  user-select: none;
+}
+canvas {
+  touch-action: none;
+  cursor: default;
+  max-width: 100%;
+}
+#readout {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 2;
+  text-align: center;
+  min-height: 60px;
+}
+.c { color: #1a56db; }
+.i { color: #c0360a; }
+b { font-weight: bold; }
+#hint {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #999;
+  font-style: italic;
+}
+</style>
+</head>
+<body>
+<canvas id="c" width="440" height="400"></canvas>
+<div id="readout"></div>
+<div id="hint">Drag A, B, or P to explore</div>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const readout = document.getElementById('readout');
+
+const W = 440, H = 400;
+const cx = W / 2, cy = H / 2 + 16, R = 160;
+
+// Initial angular positions (radians, measured from positive x-axis)
+let aA = 2, aB = 0.6, aP = -1.7;
+
+// Point on circle at angle a
+function pt(a) {
+  return [cx + R * Math.cos(a), cy + R * Math.sin(a)];
+}
+
+// Unsigned angle at vertex (ox,oy) between rays to (ax,ay) and (bx,by)
+function angleBetween(ax, ay, ox, oy, bx, by) {
+  const ux = ax - ox, uy = ay - oy;
+  const vx = bx - ox, vy = by - oy;
+  const dot = ux * vx + uy * vy;
+  const mag = Math.sqrt(ux * ux + uy * uy) * Math.sqrt(vx * vx + vy * vy);
+  if (mag < 1e-9) return 0;
+  return Math.acos(Math.max(-1, Math.min(1, dot / mag)));
+}
+
+// Counterclockwise angular distance from a to b, in [0, 2π)
+function ccwSpan(a, b) {
+  return ((b - a) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+}
+
+// Is angle c on the counterclockwise arc from a to b?
+function onCCWArc(a, b, c) {
+  return ccwSpan(a, c) < ccwSpan(a, b);
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  const [Ax, Ay] = pt(aA);
+  const [Bx, By] = pt(aB);
+  const [Px, Py] = pt(aP);
+
+  // Which arc does P lie on?
+  // ccwArcSpan = angular size of the CCW arc from A to B
+  const ccwArcSpan = ccwSpan(aA, aB);
+  const pOnCCW = onCCWArc(aA, aB, aP);
+
+  // The arc subtended by the inscribed angle at P is the arc NOT containing P.
+  // centralAngle = angular measure of that arc.
+  const centralAngle = pOnCCW ? (2 * Math.PI - ccwArcSpan) : ccwArcSpan;
+
+  // Inscribed angle (always in [0, π] via dot product)
+  const inscribedAngle = angleBetween(Ax, Ay, Px, Py, Bx, By);
+
+  const ratio = inscribedAngle > 1e-4 ? centralAngle / inscribedAngle : NaN;
+
+  // ── Draw the subtended arc (highlighted) ──────────────────────────────────
+  ctx.beginPath();
+  if (pOnCCW) {
+    // Arc not containing P goes clockwise from A to B on the circle
+    // In canvas: arc(cx,cy,r, start, end) goes clockwise by default
+    // CW from aA to aB: we want the CW arc, so we go from aA to aB in CW direction.
+    // Canvas arc goes CW, so ctx.arc(cx, cy, R, aA, aB) is the CCW mathematical arc,
+    // which IS the CW screen arc... I need to think carefully:
+    //
+    // Canvas y-axis points DOWN. ctx.arc with anticlockwise=false goes in the
+    // direction of increasing angle (clockwise visually when y points down).
+    // So ctx.arc(cx, cy, R, aA, aB) draws the arc from aA to aB increasing angle.
+    //
+    // ccwSpan(aA, aB) = 2.9 rad (CCW arc, the one P is ON)
+    // The arc NOT containing P = CW arc from A to B = going from aA DECREASING angle to aB.
+    // In canvas: anticlockwise = true (decreasing angle = CCW in canvas convention)
+    ctx.arc(cx, cy, R, aA, aB, true);
+  } else {
+    // Arc not containing P = CCW arc from A to B = increasing angle from aA to aB
+    ctx.arc(cx, cy, R, aA, aB, false);
+  }
+  ctx.strokeStyle = '#93c5fd';
+  ctx.lineWidth = 8;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // ── Circle ────────────────────────────────────────────────────────────────
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, 2 * Math.PI);
+  ctx.strokeStyle = '#9ca3af';
+  ctx.lineWidth = 1.5;
+  ctx.lineCap = 'butt';
+  ctx.stroke();
+
+  // ── Central angle lines (blue) ────────────────────────────────────────────
+  ctx.strokeStyle = '#1a56db';
+  ctx.lineWidth = 2;
+  line(cx, cy, Ax, Ay);
+  line(cx, cy, Bx, By);
+
+  // Central angle arc indicator at O
+  const r1 = 32;
+  ctx.beginPath();
+  if (pOnCCW) {
+    ctx.arc(cx, cy, r1, aA, aB, true);
+  } else {
+    ctx.arc(cx, cy, r1, aA, aB, false);
+  }
+  ctx.strokeStyle = '#1a56db';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // ── Inscribed angle lines (red) ───────────────────────────────────────────
+  ctx.strokeStyle = '#c0360a';
+  ctx.lineWidth = 2;
+  line(Px, Py, Ax, Ay);
+  line(Px, Py, Bx, By);
+
+  // Inscribed angle arc indicator at P
+  const pAngA = Math.atan2(Ay - Py, Ax - Px);
+  const pAngB = Math.atan2(By - Py, Bx - Px);
+  const r2 = 22;
+  ctx.beginPath();
+  // Draw the short arc between the two rays from P
+  if (ccwSpan(pAngA, pAngB) < Math.PI) {
+    ctx.arc(Px, Py, r2, pAngA, pAngB, false);
+  } else {
+    ctx.arc(Px, Py, r2, pAngA, pAngB, true);
+  }
+  ctx.strokeStyle = '#c0360a';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // ── Points ────────────────────────────────────────────────────────────────
+  drawPoint(cx, cy, 'O', '#1a56db', false);
+  drawPoint(Ax, Ay, 'A', '#1a56db', true);
+  drawPoint(Bx, By, 'B', '#1a56db', true);
+  drawPoint(Px, Py, 'P', '#c0360a', true);
+
+  // ── Readout ───────────────────────────────────────────────────────────────
+  const cDeg = (centralAngle * 180 / Math.PI).toFixed(1);
+  const iDeg = (inscribedAngle * 180 / Math.PI).toFixed(1);
+  const ratioStr = isNaN(ratio) ? '—' : ratio.toFixed(3);
+  readout.innerHTML =
+    '<span class="c"><b>Central ∠AOB</b> = ' + cDeg + '°</span><br>' +
+    '<span class="i"><b>Inscribed ∠APB</b> = ' + iDeg + '°</span><br>' +
+    '∠AOB / ∠APB = <b>' + ratioStr + '</b>';
+}
+
+function line(x1, y1, x2, y2) {
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+}
+
+function drawPoint(x, y, label, color, onCircle) {
+  ctx.beginPath();
+  ctx.arc(x, y, 7, 0, 2 * Math.PI);
+  ctx.fillStyle = '#fff';
+  ctx.fill();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  // Label offset: radially outward for circle points, fixed for O
+  let lx, ly;
+  if (onCircle) {
+    const dx = x - cx, dy = y - cy;
+    const len = Math.sqrt(dx * dx + dy * dy) || 1;
+    lx = x + 16 * dx / len;
+    ly = y + 16 * dy / len;
+  } else {
+    lx = x - 16;
+    ly = y + 5;
+  }
+  ctx.fillStyle = color;
+  ctx.font = 'bold 14px Georgia';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(label, lx, ly);
+}
+
+// ── Interaction ─────────────────────────────────────────────────────────────
+
+let dragging = null;
+
+function canvasXY(e) {
+  const r = canvas.getBoundingClientRect();
+  const sx = W / r.width, sy = H / r.height;
+  const src = e.touches ? e.touches[0] : e;
+  return [(src.clientX - r.left) * sx, (src.clientY - r.top) * sy];
+}
+
+function nearest(e) {
+  const [mx, my] = canvasXY(e);
+  const candidates = [
+    ['A', pt(aA)], ['B', pt(aB)], ['P', pt(aP)]
+  ];
+  for (const [name, [px, py]] of candidates) {
+    if (Math.hypot(mx - px, my - py) < 22) return name;
+  }
+  return null;
+}
+
+function setAngle(name, e) {
+  const [mx, my] = canvasXY(e);
+  const a = Math.atan2(my - cy, mx - cx);
+  if (name === 'A') aA = a;
+  else if (name === 'B') aB = a;
+  else if (name === 'P') aP = a;
+}
+
+canvas.addEventListener('mousedown', e => { dragging = nearest(e); });
+canvas.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  setAngle(dragging, e);
+  draw();
+});
+canvas.addEventListener('mouseup', () => { dragging = null; });
+canvas.addEventListener('mouseleave', () => { dragging = null; });
+
+canvas.addEventListener('touchstart', e => { e.preventDefault(); dragging = nearest(e); }, { passive: false });
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (!dragging) return;
+  setAngle(dragging, e);
+  draw();
+}, { passive: false });
+canvas.addEventListener('touchend', () => { dragging = null; });
+
+draw();
+</script>
+</body>
+</html>

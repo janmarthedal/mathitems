@@ -176,6 +176,7 @@ export async function generateSite(
                     ...globals,
                     name: node.name,
                     description: node.description,
+                    subtype: node.subtype,
                     path: renderData.blobpath,
                 }));
                 // Write media blob

@@ -21,7 +21,7 @@ export function load(globPattern: string): Array<Node> {
             content = dataContent.content;
         } else if (extension === '.yaml') {
             data = loadYaml(readFileSync(filename, 'utf8')) as Record<string, unknown>;
-        } else if (extension === '.svg') {
+        } else if (extension === '.svg' || extension === '.html') {
             // ignore, will (should) be loaded via a media node
             continue;
         } else {
