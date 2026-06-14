@@ -39,33 +39,7 @@ This is a static site generator for a collection of mathematical items (definiti
 
 **All item types share a single numeric namespace.** D1, T2, P5 each occupy their number — no two items of any type can share the same number. Run `npm run check` to see which numbers are free.
 
-## Item file format
-
-Markdown items use YAML front matter:
-```markdown
----
-type: definition   # or theorem, proof, media, source
-id: D42
-created: 2024-01-15T10:00:00Z
-creator: U1
-keywords:          # optional
-  - some-keyword
----
-Body text with $inline math$ and $$display math$$.
-```
-
-Proofs additionally require `parent: T<n>` pointing to their theorem.
-
-Validations use a YAML list format under `items/validations/`, linking items to source references by location.
-
-## Markup link syntax
-
-Within item bodies:
-- `[text](=concept-name)` — defines a concept (italicizes text, creates concept node)
-- `[text](D1)` — links to another item
-- `[text](D1#concept-name)` — links to an item at a concept anchor
-- `[text](#concept-name)` — links to a concept node
-- `![alt](M1)` — embeds media
+For item file formats, folder locations, filename conventions, and markup link syntax, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Templates
 
