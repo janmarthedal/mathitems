@@ -22,6 +22,8 @@ Pick any free number for your new item.
 **Folder:** `items/definitions/`  
 **Filename:** `D<n>.md` (e.g. `D42.md`)
 
+Every definition **must** define at least one concept using `[text](=concept-name)` syntax in its body. Only definitions may define concepts — theorems, proofs, and other item types must not use `[text](=concept-name)`.
+
 ```markdown
 ---
 type: definition
@@ -162,7 +164,7 @@ Within definition, theorem, and proof bodies:
 
 | Syntax | Effect |
 |--------|--------|
-| `[text](=concept-name)` | Define a concept (italicizes text, creates a concept node) |
+| `[text](=concept-name)` | Define a concept — **definitions only**; italicizes text and creates a concept node |
 | `[text](D1)` | Link to item D1 |
 | `[text](D1#concept-name)` | Link to item D1 at a concept anchor |
 | `[text](#concept-name)` | Link to a concept node |
