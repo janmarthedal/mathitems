@@ -115,6 +115,23 @@ extra:
 ---
 ```
 
+### User (`U<n>`)
+
+**Folder:** `items/users/`  
+**Filename:** `U<n>.yaml` (e.g. `U2.yaml`) — pure YAML, not markdown.
+
+Users have their own `U<n>` ID namespace, separate from the shared numeric namespace used by D/T/P/M/S items.
+
+```yaml
+type: user
+id: U2
+created: 2024-01-15T10:00:00Z
+name: Jane Doe
+email: jane@example.com
+```
+
+**LLM contributors:** If you are an LLM creating or editing items, use a user whose `name` reflects your model name and version (e.g. `Claude Sonnet 4.6`). Check `items/users/` for an existing entry that matches; if none exists, create one with the next free `U<n>` ID and use the same email address used for git commits (e.g. `noreply@anthropic.com` for Claude).
+
 ### Validation
 
 Validations link items to their locations in a source. They do not get an explicit `id` — one is assigned automatically.
@@ -172,3 +189,4 @@ Math is written in LaTeX: `$inline$` and `$$display$$`.
 | media | `type`, `id`, `subtype`, `creator`, `created`, `path` | `description` optional |
 | source | `type`, `id`, `subtype`, `creator`, `created`, `title`, `extra` | |
 | validation | `type`, `subtype`, `source`, `list` | No `id` field |
+| user | `type`, `id`, `created`, `name`, `email` | Own `U<n>` namespace |
