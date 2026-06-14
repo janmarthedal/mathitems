@@ -26,6 +26,7 @@ interface DecoratedNode {
     readonly filename: string;        // Path on disk
     readonly permalink: string;       // Path on web
     readonly blobpath?: string;       // Media blob path
+    readonly subtype?: string;        // Media subtype (svg, html, ...)
 }
 
 function decorateNamedNode(pathitem: string, name: string): DecoratedNode {
@@ -43,7 +44,8 @@ function makeRenderData(nodes: Array<Node>): Map<string, DecoratedNode> {
             visitProof: node => decorateNamedNode('proof', node.name),
             visitMedia: node => ({
                 ...decorateNamedNode('media', node.name),
-                blobpath: `/blobs/${node.name}.${node.subtype}`
+                blobpath: `/blobs/${node.name}.${node.subtype}`,
+                subtype: node.subtype,
             }),
             visitConcept: node => decorateNamedNode('concept', node.name),
             visitSource: node => decorateNamedNode('source', node.name),
@@ -60,6 +62,9 @@ function prepareMarkup(contents: string, renderDataMap: Map<string, DecoratedNod
     return contents.replace(LINK_REGEX, (_match, bang, text, link) => {
         if (bang) {
             const mediaNode = renderDataMap.get(link)!;
+            if (mediaNode.subtype === 'html') {
+                return `<iframe src="${mediaNode.blobpath}" sandbox="allow-scripts" width="460" height="480" style="border:none;display:block;"></iframe>`;
+            }
             return `![${text || link}](${mediaNode.blobpath})`;
         }
         if (link.startsWith('=')) {
@@ -125,7 +130,7 @@ export async function generateSite(
 ) {
     const renderDataMap = makeRenderData(nodes);
 
-    const md = new MarkdownIt();
+    const md = new MarkdownIt({ html: true });
     md.use(mk);
 
     const env = new nunjucks.Environment(new nunjucks.FileSystemLoader(layoutDir), { autoescape: true });

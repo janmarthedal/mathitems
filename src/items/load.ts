@@ -34,6 +34,10 @@ export function load(globPattern: string): Array<Node> {
             content = readFileSync(path, 'utf8');
         }
 
+        if (data.type === 'user') {
+            continue;
+        }
+
         if (data.list) {
             const base = { ...data, list: undefined };
             for (const item of data.list as Array<Record<string, unknown>>) {
